@@ -12,17 +12,17 @@
 
 要在本地安裝並執行這個遊戲，你需要先克隆這個倉庫，然後安裝依賴項目：
 
-\```bash
+```bash
 git clone https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPOSITORY_NAME.git
 cd YOUR_REPOSITORY_NAME
 npm install
-\```
+```
 
 接著使用以下命令來啟動遊戲：
 
-\```bash
+```bash
 npm start
-\```
+```
 
 ---
 
@@ -40,14 +40,14 @@ This is a final web project for the NTTU (National Taitung University) course "G
 
 To install and run this game locally, clone the repository and install the dependencies first:
 
-\```bash
+```bash
 git clone https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPOSITORY_NAME.git
 cd YOUR_REPOSITORY_NAME
 npm install
-\```
+```
 
 Then use the following command to start the game:
 
-\```bash
+```bash
 npm start
-\```
+```
