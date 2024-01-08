@@ -1,0 +1,26 @@
+# 依賴項目錄
+node_modules/
+
+# 打包目錄
+dist/
+
+# 編輯器設定
+.history/
+.vscode/
+*.code-workspace
+
+# 系統文件
+.DS_Store
+Thumbs.db
+
+# 日誌文件
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# 環境配置文件
+.env
+
+# lock文件
+package-lock.json
+yarn.lock

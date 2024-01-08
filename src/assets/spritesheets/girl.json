@@ -1,0 +1,252 @@
+{
+    "anims": [
+        {
+            "key": "die",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 6,
+            "frames": [
+                {
+                    "key": "character_main",
+                    "frame": "girl41"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl42"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl43"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl44"
+                }
+            ]
+        },
+        {
+            "key": "idletop",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 6,
+            "frames": [
+                {
+                    "key": "character_main",
+                    "frame": "girl13"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl14"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl15"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl16"
+                }
+            ]
+        },
+        {
+            "key": "idleright",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 6,
+            "frames": [
+                {
+                    "key": "character_main",
+                    "frame": "girl9"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl10"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl11"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl12"
+                }
+            ]
+        },
+        {
+            "key": "idleleft",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 6,
+            "frames": [
+                {
+                    "key": "character_main",
+                    "frame": "girl5"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl6"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl7"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl8"
+                }
+            ]
+        },
+        {
+            "key": "idle",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 6,
+            "frames": [
+                {
+                    "key": "character_main",
+                    "frame": "girl1"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl2"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl3"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl4"
+                }
+            ]
+        },
+        {
+            "key": "walk",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 6,
+            "frames": [
+                {
+                    "key": "character_main",
+                    "frame": "girl17"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl18"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl19"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl20"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl21"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl22"
+                }
+            ]
+        },
+        {
+            "key": "walkup",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 6,
+            "frames": [
+                {
+                    "key": "character_main",
+                    "frame": "girl35"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl36"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl37"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl38"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl39"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl40"
+                }
+            ]
+        },
+        {
+            "key": "walkright",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 6,
+            "frames": [
+                {
+                    "key": "character_main",
+                    "frame": "girl29"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl30"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl31"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl32"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl33"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl34"
+                }
+            ]
+        },
+        {
+            "key": "walkleft",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 6,
+            "frames": [
+                {
+                    "key": "character_main",
+                    "frame": "girl23"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl24"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl25"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl26"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl27"
+                },
+                {
+                    "key": "character_main",
+                    "frame": "girl28"
+                }
+            ]
+        }
+    ]
+}
