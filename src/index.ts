@@ -1,7 +1,7 @@
 import { Game, Types } from 'phaser';
 
 // @ts-ignore
-import { Level1, LoadingScene, UIScene } from './scenes';
+import { Level1, LoadingScene, UIScene, Dungeon } from './scenes';
 
 interface Window {
     sizeChanged: () => void;
@@ -43,7 +43,7 @@ export const gameConfig: GameConfigExtended = {
     audio: {
         disableWebAudio: false,
     },
-    scene: [LoadingScene, Level1, UIScene],
+    scene: [LoadingScene, Level1, UIScene, Dungeon],
 };
 
 window.sizeChanged = () => {

@@ -7,7 +7,7 @@ export class LoadingScene extends Scene {
 
     create(): void {
         console.log('Loading scene was created');
-        this.scene.start('level-1-scene');
+        this.scene.start('dungeon-scene');
         this.scene.start('ui-scene');
     }
 
@@ -24,8 +24,11 @@ export class LoadingScene extends Scene {
             key: 'tiles',
             url: 'tilemaps/tiles/dungeon-16-16.png',
         });
-        this.load.tilemapTiledJSON('dungeon', 'tilemaps/json/dungeon.json');
 
+        this.load.tilemapTiledJSON('dungeon', 'tilemaps/json/dungeon.json');
+        
+        this.load.tilemapTiledJSON('dungeonAssets', 'tilemaps/json/dungeon-assets.json');
+        
         this.load.spritesheet('tiles_spr', 'tilemaps/tiles/dungeon-16-16.png', {
             frameWidth: 16,
             frameHeight: 16,

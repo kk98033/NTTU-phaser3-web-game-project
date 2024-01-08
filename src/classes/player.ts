@@ -12,6 +12,16 @@ export class Player extends Actor {
 
     private hpValue: Text;
 
+    private isMoving;
+    private isAnimating;
+    
+    private playerWidth;
+    private playerHeight;
+
+    private debugGraphics: Phaser.GameObjects.Graphics;
+
+    private speed = 510;
+
     constructor(scene: Phaser.Scene, x: number, y: number) {
         // super(scene, x, y, 'king');
         super(scene, x, y, 'girl');
@@ -25,64 +35,102 @@ export class Player extends Actor {
         // @ts-ignore
         this.keyD = this.scene.input.keyboard.addKey('D');
 
+        this.isMoving = false
+        this.isAnimating = false;
+
         // @ts-ignore
         this.keySpace = this.scene.input.keyboard.addKey(32);
         this.keySpace.on('down', (event: KeyboardEvent) => {
-            this.anims.play('girl-attack', true);
-            this.scene.game.events.emit(EVENTS_NAME.attack);
+            if (!this.isAnimating) {
+                this.anims.play('girl-attack', true);
+                this.scene.game.events.emit(EVENTS_NAME.attack);
+                this.isMoving = true;
+                this.isAnimating = true; // playing animation
+            }
         });
+        // @ts-ignore
+        this.on('animationcomplete', (animation, frame) => {
+            if (animation.key === 'girl-attack' || animation.key === 'girl-idle') {
+                this.isAnimating = false; 
+            }
+        }, this);
 
         // PHYSICS
-        this.getBody().setSize(16, 16);
-        this.getBody().setOffset(8, 0);
+        // girl
+        this.playerWidth = 24;
+        this.playerHeight = 24;
+        this.getBody().setSize(this.playerWidth, this.playerHeight);
+        // this.getBody().setOffset(8, 0);
 
         this.initAnimations();
 
         this.hpValue = new Text(this.scene, this.x, this.y - this.height, this.hp.toString())
             .setFontSize(12)
             .setOrigin(0.8, 0.5);
+
+        // debug hitbox
+        this.debugGraphics = this.scene.add.graphics();
     }
 
     update(): void {
         this.getBody().setVelocity(0);
+        this.isMoving = false;
 
-        let isMoving = false;
+        this.drawCollisionBox();
+        
         if (this.keyW?.isDown || this.keyA?.isDown || this.keyS?.isDown || this.keyD?.isDown) {
             if (this.anims.currentAnim && this.anims.currentAnim.key === 'girl-idle') {
                 this.anims.stop();
             }
         }
+        
         if (this.keyW?.isDown) {
-            this.getBody().velocity.y = -110;
+            this.getBody().velocity.y = -this.speed;
             !this.anims.isPlaying && this.anims.play('walk', true);
-            isMoving = true;
+            this.isMoving = true;
         }
+        
         if (this.keyA?.isDown) {
-            this.getBody().velocity.x = -110;
+            this.getBody().velocity.x = -this.speed;
             this.checkFlip();
-            this.getBody().setOffset(48, 15);
+            // this.getBody().setOffset(48, 15);
+            this.getBody().setOffset(this.playerWidth, 0);
             !this.anims.isPlaying && this.anims.play('walk', true);
-            isMoving = true;
+            this.isMoving = true;
         }
         if (this.keyS?.isDown) {
-            this.getBody().velocity.y = 110;
+            this.getBody().velocity.y = this.speed;
             !this.anims.isPlaying && this.anims.play('walk', true);
-            isMoving = true;
+            this.isMoving = true;
         }
         if (this.keyD?.isDown) {
-            this.getBody().velocity.x = 110;
+            this.getBody().velocity.x = this.speed;
             this.checkFlip();
-            this.getBody().setOffset(15, 15);
+            // this.getBody().setOffset(15, 15);
+            this.getBody().setOffset(0, 0);
             !this.anims.isPlaying && this.anims.play('walk', true);
-            isMoving = true;
+            this.isMoving = true;
         }
-
-        if (!isMoving) {
+        
+        if (!this.isMoving) {
             this.anims.play('girl-idle', true);
         }
 
         this.hpValue.setPosition(this.x, this.y - this.height * 0.4);
         this.hpValue.setOrigin(0.8, 0.5);
+    }
+
+    private drawCollisionBox(): void {
+        this.debugGraphics.clear();
+
+        const showDebug = true;
+
+        if (showDebug) {
+            const body = this.getBody();
+
+            this.debugGraphics.lineStyle(1, 0x00ff00); // yellow
+            this.debugGraphics.strokeRect(body.x, body.y, body.width, body.height);
+        }
     }
 
     public getDamage(value?: number): void {
