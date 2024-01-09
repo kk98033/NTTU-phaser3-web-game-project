@@ -5,7 +5,7 @@ import { Enemy } from '../../classes/enemy';
 import { Minimap } from '../../classes/minimap';
 import { gameObjectsToObjectPoints } from '../../helpers/gameobject-to-object-point';
 
-import { EVENTS_NAME } from '../../consts';
+import { EVENTS_NAME, GameStatus } from '../../consts';
 
 import { DungeonGenerator } from '../../classes/dungeonGenerator';
 
@@ -20,6 +20,7 @@ export class Dungeon extends Scene {
     private groundLayer!: Tilemaps.TilemapLayer;
 
     private chests!: Phaser.GameObjects.Sprite[];
+    private points!: Phaser.GameObjects.Sprite[];
     private enemies!: Enemy[];
 
     private minimap!: Minimap;
@@ -29,13 +30,14 @@ export class Dungeon extends Scene {
     }
     
     create(): void {
-        this.dungeonGenerator = new DungeonGenerator(this, this.physics);
-        this.dungeonGenerator.initMap();
-        this.dungeonGenerator.generateRandomRooms();
         // this.initMap();
         
         this.player = new Player(this, 16 * 16, 16 * 20);
         this.player.setDepth(10);
+        
+        this.dungeonGenerator = new DungeonGenerator(this, this.physics);
+        this.dungeonGenerator.initMap();
+        this.dungeonGenerator.generateRandomRooms();
 
         this.dungeonGenerator.setColisions(this.player);
         
@@ -46,6 +48,7 @@ export class Dungeon extends Scene {
         this.initCamera()
         // this.initChests();
         // this.initEnemies();
+        this.initPoints();
     }
 
     update(): void {
@@ -58,6 +61,31 @@ export class Dungeon extends Scene {
         // console.log(playerRoomRow, playerRoomCol)
 
         
+    }
+
+    private initPoints(): void {
+        this.dungeonGenerator.getPoints().forEach(point => {
+            let sprite = this.physics.add.sprite(point.x, point.y, 'tiles_spr', point.id).setScale(2);
+            sprite.setDepth(9);
+
+            this.physics.add.overlap(this.player, sprite, (player, collidedSprite) => {
+                // 檢查是否是特定 ID
+                if (point.id === 357) {
+                    // 處理進入下一關的邏輯
+                    GameStatus.WIN;
+                    this.game.events.emit(EVENTS_NAME.goNextLevel);
+                    // 例如重啟場景或轉到新場景
+                    // this.scene.restart();
+                    // 或者 this.scene.start('nextLevelScene');
+                } else {
+                    // 其他情況的處理
+                    this.game.events.emit(EVENTS_NAME.chestLoot);
+                    this.cameras.main.flash();
+                }
+    
+                collidedSprite.destroy();
+            });
+        });
     }
 
     private initMap(): void {
@@ -83,7 +111,7 @@ export class Dungeon extends Scene {
     }
 
     private initChests(): void {
-        const objects = this.map.filterObjects('Chests', obj => obj.name === 'ChestPoint') || [];
+        const objects = this.map.filterObjects('chests', obj => obj.name === 'ChestPoint') || [];
         const chestPoints = gameObjectsToObjectPoints(objects);
 
         this.chests = chestPoints.map(chestPoint =>

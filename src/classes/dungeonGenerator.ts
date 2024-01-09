@@ -1,4 +1,6 @@
 import { Player } from "./player";
+import { gameObjectsToObjectPoints } from '../helpers/gameobject-to-object-point';
+import { EVENTS_NAME } from '../consts';
 
 export class DungeonGenerator {
     private map!: Phaser.Tilemaps.Tilemap;
@@ -19,9 +21,14 @@ export class DungeonGenerator {
     public aisleWallsVertical!: Phaser.Tilemaps.TilemapLayer;
     public aisleGroundVertical!: Phaser.Tilemaps.TilemapLayer;
 
+    private gameAssets!: Phaser.Tilemaps.TilemapLayer;
+
     public roomMaps!: number[][][];
 
+    public points: any[];
+
     constructor(private scene: Phaser.Scene, private physics: Phaser.Physics.Arcade.ArcadePhysics) {
+        this.points = [];
     }
 
     private mapWidth = 100;
@@ -46,6 +53,7 @@ export class DungeonGenerator {
         this.wallLayers = this.map.createBlankLayer('wallLayers', this.tileset, 0, 0, 150, 150)!;
         this.aisleGroundLayers = this.map.createBlankLayer('aisleGroundLayers', this.tileset, 0, 0, 150, 150)!;
         this.aisleWallLayers = this.map.createBlankLayer('aisleWallLayers', this.tileset, 0, 0, 150, 150)!;
+        this.gameAssets = this.map.createBlankLayer('gameAssets', this.tileset, 0, 0, 150, 150)!;
 
         this.groundLayers.setDepth(2);
         this.wallLayers.setDepth(2);
@@ -60,6 +68,80 @@ export class DungeonGenerator {
         // let graphics = this.scene.add.graphics();
         // graphics.lineStyle(2, 0xff0000); // red
         // graphics.strokeRect(0, 0, (this.mapWidth + 30) * 16, (this.mapHeight + 30) * 16);
+    }
+
+    public generateRandomRooms(): void {
+        // main function to generate dungeon rooms
+
+        this.roomMaps = this.createRandomDungeon();
+
+        // create start room
+        // 靠爲什麼我要把他的大小社的跟期他房間不一樣 我要瘋了 ==
+        this.createStartRoom(this.roomMaps[0][0]);
+        
+        this.createRoom(this.roomMaps)
+
+        // decide end room
+        let [endRoomX, endRoomY] = this.decideEndRoom();
+        console.log(endRoomX, endRoomY);
+
+        this.generateFinalRoomAssets(endRoomX, endRoomY);
+    }
+
+    private generateFinalRoomAssets(endRoomX: number, endRoomY: number): void {
+        const objects = this.map.filterObjects('NextLevelPoint', obj => obj.name === 'nextLevel') || [];
+        const NextLevelPoints = gameObjectsToObjectPoints(objects);
+        NextLevelPoints.forEach(point => {
+            let data = { 
+                x: Math.floor(point.x) + (endRoomY) * (30 + 15) * 16, 
+                y: Math.floor(point.y) + (endRoomX) * (30 + 15) * 16, 
+                id: this.getTileIDByName(point.name) 
+            }
+            this.points.push(data);
+        });
+
+        const chestObjects = this.map.filterObjects('ChestsPoint', obj => obj.name === 'endChest') || [];
+        const chestPoints = gameObjectsToObjectPoints(chestObjects);
+        chestPoints.forEach(point => {
+            let data = { 
+                x: Math.floor(point.x) + (endRoomY) * (30 + 15) * 16, 
+                y: Math.floor(point.y) + (endRoomX) * (30 + 15) * 16, 
+                id: this.getTileIDByName(point.name) 
+            }
+            this.points.push(data);
+        });
+        console.log(this.points);
+    }
+
+    public getTileIDByName(name: string): number {
+        if (name === 'nextLevel') return 357
+        if (name === 'chests') return 595
+        if (name === 'endChest') return 595
+        return -1
+    }
+
+    public getPoints() {
+        return this.points;
+    }
+
+    private decideEndRoom(): number[] {
+        let possilblePositions = [
+            [2,0], [2,1], [2,2], [0,2], [1,2],
+        ];
+        let canBeEndRoom: number[][] = [];
+        possilblePositions.forEach(position => {
+            let row = position[0];
+            let col = position[1];
+            let openingsCount = this.roomMaps[row][col].filter(x => x === 1).length;
+            if (openingsCount == 1) {
+                canBeEndRoom.push([row, col]);
+            }
+        });
+        
+        if (canBeEndRoom.length === 0) return [2, 2]; // default end room
+
+        let randomIndex = Math.floor(Math.random() * canBeEndRoom.length);
+        return canBeEndRoom[randomIndex]
     }
 
     public createStartRoom(opening: number[]): void {
@@ -119,16 +201,6 @@ export class DungeonGenerator {
 
     public getRoomMaps(): number[][][] {
         return this.roomMaps;
-    }
-
-    public generateRandomRooms(): void {
-        this.roomMaps = this.createRandomDungeon();
-
-        // create start room
-        // 靠爲什麼我要把他的大小社的跟期他房間不一樣 我要瘋了 ==
-        this.createStartRoom(this.roomMaps[0][0]);
-        
-        this.createRoom(this.roomMaps)
     }
 
     private createRoom(roomMaps: number[][][]): void {

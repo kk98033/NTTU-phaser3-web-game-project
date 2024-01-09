@@ -11,6 +11,7 @@ export class UIScene extends Scene {
 
     private gameEndPhrase!: Phaser.GameObjects.Text;
     private gameEndHandler: (status: GameStatus) => void;
+    private dungeonHandler: (status: GameStatus) => void;
 
 
     constructor() {
@@ -50,6 +51,42 @@ export class UIScene extends Scene {
                 this.scene.get('level-1-scene').scene.restart();
                 this.scene.restart();
             });
+
+        };
+
+        // next level ui
+        // TODO: alow to enter next level
+        this.dungeonHandler = (status) => {
+            this.cameras.main.setBackgroundColor('rgba(0,0,0,0.6)');
+            this.game.scene.pause('level-1-scene');
+            this.gameEndPhrase = new Phaser.GameObjects.Text(
+                this,
+                this.game.scale.width / 2,
+                this.game.scale.height * 0.4,
+                status === GameStatus.LOSE
+                    ? `WASTED!\nCLICK TO RESTART`
+                    : `YOU ARE ROCK!\nCLICK TO RESTART`,
+                {
+                    fontFamily: 'Arial',
+                    fontSize: '32px',
+                    align: 'center',
+                    color: status === GameStatus.LOSE ? '#ff0000' : '#ffffff'
+                },
+            );
+            this.add.existing(this.gameEndPhrase);
+            this.gameEndPhrase.setPosition(
+                this.game.scale.width / 2 - this.gameEndPhrase.width / 2,
+                this.game.scale.height * 0.4,
+            );
+            if (GameStatus.WIN) {
+                this.input.on('pointerdown', () => {
+                    this.game.events.off(EVENTS_NAME.chestLoot, this.chestLootHandler);
+                    this.game.events.off(EVENTS_NAME.goNextLevel, this.gameEndHandler);
+                    this.scene.get('dungeon-scene').scene.restart();
+                    this.scene.restart();
+                    GameStatus.EXPLORING;
+                });
+            }
         };
 
         // win ui
@@ -71,5 +108,6 @@ export class UIScene extends Scene {
     private initListeners(): void {
         this.game.events.on(EVENTS_NAME.chestLoot, this.chestLootHandler, this);
         this.game.events.once(EVENTS_NAME.gameEnd, this.gameEndHandler, this);
+        this.game.events.once(EVENTS_NAME.goNextLevel, this.dungeonHandler, this);
     }
 }
