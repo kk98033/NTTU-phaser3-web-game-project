@@ -1,5 +1,6 @@
 import { Scene } from 'phaser';
 import { Score, ScoreOperations } from '../../classes/score';
+import { Text } from '../../classes/text';
 import { EVENTS_NAME, GameStatus } from '../../consts';
 
 import { gameConfig } from '../../';
@@ -63,6 +64,8 @@ export class UIScene extends Scene {
     create(): void {
         this.score = new Score(this, 20, 20, 0);
         this.initListeners();
+
+        this.scene.moveAbove('dungeon-scene');
     }
 
     private initListeners(): void {

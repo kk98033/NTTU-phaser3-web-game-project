@@ -47,6 +47,11 @@ export class DungeonGenerator {
         this.aisleGroundLayers = this.map.createBlankLayer('aisleGroundLayers', this.tileset, 0, 0, 150, 150)!;
         this.aisleWallLayers = this.map.createBlankLayer('aisleWallLayers', this.tileset, 0, 0, 150, 150)!;
 
+        this.groundLayers.setDepth(2);
+        this.wallLayers.setDepth(2);
+        this.aisleGroundLayers.setDepth(2);
+        this.aisleWallLayers.setDepth(2);
+
         // test
         // this.groundLayer = this.map.createLayer('battle-ground', this.tileset, 0, this.tileSize * 36)!;
         // this.wallLayer = this.map.createLayer('battle-walls-up', this.tileset, 0, this.tileSize * 36)!;
@@ -69,8 +74,9 @@ export class DungeonGenerator {
         } else if (opening[3] === 1) {
             this.startRoom = this.map.createLayer('ground-3', this.tileset, this.tileSize * 0, this.tileSize * 8)!;
             this.startRoomWalls = this.map.createLayer('walls-3', this.tileset, this.tileSize * 0, this.tileSize * 8)!;
-
         }
+        this.startRoom.setDepth(0);
+        this.startRoomWalls.setDepth(0);
     }
 
     public drawBackground(): void {
@@ -140,6 +146,7 @@ export class DungeonGenerator {
                     }
                     continue;
                 } // skip start room
+                if (row === 0 && col === 0) continue;
 
                 // Calculate the position of the room on the map
                 let xOffset = col * roomSize;

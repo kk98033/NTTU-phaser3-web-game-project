@@ -32,10 +32,10 @@ export class Dungeon extends Scene {
         this.dungeonGenerator = new DungeonGenerator(this, this.physics);
         this.dungeonGenerator.initMap();
         this.dungeonGenerator.generateRandomRooms();
-        this.events.emit('dungeonGeneratorCreated', this.dungeonGenerator);
         // this.initMap();
         
         this.player = new Player(this, 16 * 16, 16 * 20);
+        this.player.setDepth(10);
 
         this.dungeonGenerator.setColisions(this.player);
         

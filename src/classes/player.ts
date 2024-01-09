@@ -75,6 +75,7 @@ export class Player extends Actor {
 
         // player on minimap
         this.minimapPlayer = this.scene.add.graphics();
+        this.minimapPlayer.setDepth(10);
         this.scene.cameras.main.ignore(this.minimapPlayer);
     }
 
@@ -126,6 +127,7 @@ export class Player extends Actor {
 
         this.hpValue.setPosition(this.x, this.y - this.height * 0.4);
         this.hpValue.setOrigin(0.8, 0.5);
+        this.hpValue.setDepth(10);
     }
 
     private drawCollisionBox(): void {
