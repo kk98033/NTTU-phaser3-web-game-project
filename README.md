@@ -2,6 +2,9 @@
 
 這是一個為了NTTU（國立臺東大學）遊戲程式設計應用與實務課程的期末網頁專案。此專案使用了Phaser 3遊戲引擎和多個開源JavaScript/TypeScript套件來開發。
 
+## 線上遊玩網址
+[線上遊玩網址](https://games.iddle.dev/WebGame)
+
 ## 使用技術
 
 - **遊戲引擎**: [Phaser 3](https://phaser.io/phaser3)
@@ -29,6 +32,9 @@ npm start
 # NTTU Game Programming Applications and Practices Final Web Project
 
 This is a final web project for the NTTU (National Taitung University) course "Game Programming Applications and Practices". It has been developed using the Phaser 3 game engine along with various open-source JavaScript/TypeScript libraries.
+
+## Online Play URL
+[Online Play URL](https://games.iddle.dev/WebGame)
 
 ## Technologies Used
 
