@@ -20,7 +20,7 @@ export class Player extends Actor {
 
     private debugGraphics: Phaser.GameObjects.Graphics;
 
-    private speed = 510;
+    private speed = 210;
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
         // super(scene, x, y, 'king');
