@@ -19,6 +19,7 @@ export class Player extends Actor {
     private playerHeight;
 
     private debugGraphics: Phaser.GameObjects.Graphics;
+    private minimapPlayer: Phaser.GameObjects.Graphics;
 
     private speed = 210;
 
@@ -41,7 +42,8 @@ export class Player extends Actor {
         // @ts-ignore
         this.keySpace = this.scene.input.keyboard.addKey(32);
         this.keySpace.on('down', (event: KeyboardEvent) => {
-            if (!this.isAnimating) {
+            // TODO: have some bugs
+            if (!this.isAnimating || true) {
                 this.anims.play('girl-attack', true);
                 this.scene.game.events.emit(EVENTS_NAME.attack);
                 this.isMoving = true;
@@ -70,13 +72,19 @@ export class Player extends Actor {
 
         // debug hitbox
         this.debugGraphics = this.scene.add.graphics();
+
+        // player on minimap
+        this.minimapPlayer = this.scene.add.graphics();
+        this.scene.cameras.main.ignore(this.minimapPlayer);
     }
 
     update(): void {
         this.getBody().setVelocity(0);
         this.isMoving = false;
 
-        this.drawCollisionBox();
+        // this.drawCollisionBox();
+
+        this.drawMinimapPlayer();
         
         if (this.keyW?.isDown || this.keyA?.isDown || this.keyS?.isDown || this.keyD?.isDown) {
             if (this.anims.currentAnim && this.anims.currentAnim.key === 'girl-idle') {
@@ -122,15 +130,18 @@ export class Player extends Actor {
 
     private drawCollisionBox(): void {
         this.debugGraphics.clear();
+        const body = this.getBody();
 
-        const showDebug = true;
+        this.debugGraphics.lineStyle(1, 0x00ff00); // yellow
+        this.debugGraphics.strokeRect(body.x, body.y, body.width, body.height);
+    }
 
-        if (showDebug) {
-            const body = this.getBody();
+    private drawMinimapPlayer() {
+        this.minimapPlayer.clear();
+        const body = this.getBody();
 
-            this.debugGraphics.lineStyle(1, 0x00ff00); // yellow
-            this.debugGraphics.strokeRect(body.x, body.y, body.width, body.height);
-        }
+        this.minimapPlayer.fillStyle(0x51ff00, 1); // green
+        this.minimapPlayer.fillRect(body.x, body.y, body.width * 2, body.height * 2);
     }
 
     public getDamage(value?: number): void {
@@ -139,6 +150,32 @@ export class Player extends Actor {
         if (this.hp <= 0) {
             this.scene.game.events.emit(EVENTS_NAME.gameEnd, GameStatus.LOSE);
         }
+    }
+
+    public getPlayerPosition(playerX: number, playerY: number): [boolean, number, number] {
+        const roomSize = 30;
+        const corridorSize = 15;
+        const totalSize = roomSize + corridorSize;
+
+        let gridCol = Math.floor(playerX / (16 * totalSize));
+        let gridRow = Math.floor(playerY / (16 * totalSize));
+
+        // check if player is in room
+        let inRoomCol = playerX % (16 * totalSize) < (16 * roomSize);
+        let inRoomRow = playerY % (16 * totalSize) < (16 * roomSize);
+        let isInRoom = inRoomCol && inRoomRow;
+
+        if (inRoomCol && inRoomRow) {
+            // in room
+            console.log('inroom', gridCol, gridRow);
+
+        } else {
+            // in aisle
+            console.log('in aisle', gridCol, gridRow)
+
+        }
+        
+        return [isInRoom, gridRow, gridCol];
     }
 
     private initAnimations(): void {

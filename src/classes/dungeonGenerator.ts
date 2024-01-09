@@ -19,8 +19,9 @@ export class DungeonGenerator {
     public aisleWallsVertical!: Phaser.Tilemaps.TilemapLayer;
     public aisleGroundVertical!: Phaser.Tilemaps.TilemapLayer;
 
-    constructor(private scene: Phaser.Scene, private physics: Phaser.Physics.Arcade.ArcadePhysics) {
+    public roomMaps!: number[][][];
 
+    constructor(private scene: Phaser.Scene, private physics: Phaser.Physics.Arcade.ArcadePhysics) {
     }
 
     private mapWidth = 100;
@@ -28,12 +29,14 @@ export class DungeonGenerator {
     private tileSize = 16;
 
     public initMap(): void {
+        this.drawBackground();
+
         this.map = this.scene.make.tilemap({ key: 'dungeonAssets', tileWidth: 16, tileHeight: 16 });
         this.tileset = this.map.addTilesetImage('dungeon', 'tiles')!;
 
         // start room
-        this.startRoom = this.map.createLayer('ground', this.tileset, this.tileSize * 0, this.tileSize * 8)!;
-        this.startRoomWalls = this.map.createLayer('walls-down', this.tileset, this.tileSize * 0, this.tileSize * 8)!;
+        // this.startRoom = this.map.createLayer('ground', this.tileset, this.tileSize * 0, this.tileSize * 8)!;
+        // this.startRoomWalls = this.map.createLayer('walls-down', this.tileset, this.tileSize * 0, this.tileSize * 8)!;
 
         // test
         // this.aisleGroundVertical = this.map.createLayer('aisle-ground-vertical', this.tileset, this.tileSize * 0, this.tileSize * 14)!;
@@ -49,9 +52,37 @@ export class DungeonGenerator {
         // this.wallLayer = this.map.createLayer('battle-walls-up', this.tileset, 0, this.tileSize * 36)!;
         
         // draw map outline
+        // let graphics = this.scene.add.graphics();
+        // graphics.lineStyle(2, 0xff0000); // red
+        // graphics.strokeRect(0, 0, (this.mapWidth + 30) * 16, (this.mapHeight + 30) * 16);
+    }
+
+    public createStartRoom(opening: number[]): void {
+        if (opening[2] === 1 && opening[3] === 1) {
+            this.startRoom = this.map.createLayer('ground-2-3', this.tileset, this.tileSize * 0, this.tileSize * 8)!;
+            this.startRoomWalls = this.map.createLayer('walls-2-3', this.tileset, this.tileSize * 0, this.tileSize * 8)!;
+
+        } else if (opening[2] === 1) {
+            this.startRoom = this.map.createLayer('ground-2-3', this.tileset, this.tileSize * 0, this.tileSize * 8)!;
+            this.startRoomWalls = this.map.createLayer('walls-2', this.tileset, this.tileSize * 0, this.tileSize * 8)!;
+            
+        } else if (opening[3] === 1) {
+            this.startRoom = this.map.createLayer('ground-3', this.tileset, this.tileSize * 0, this.tileSize * 8)!;
+            this.startRoomWalls = this.map.createLayer('walls-3', this.tileset, this.tileSize * 0, this.tileSize * 8)!;
+
+        }
+    }
+
+    public drawBackground(): void {
+        // draw background
         let graphics = this.scene.add.graphics();
-        graphics.lineStyle(2, 0xff0000); // red
-        graphics.strokeRect(0, 0, (this.mapWidth + 30) * 16, (this.mapHeight + 30) * 16);
+        graphics.lineStyle(30, 0xff0000); // 紅色
+        graphics.strokeRect(1, 1, (this.mapWidth + 30) * 16, (this.mapWidth + 30) * 16);
+        graphics.fillStyle(0x666666, 0.5);
+        graphics.fillRect(0, 0, (this.mapWidth + 30) * 16, (this.mapWidth + 30) * 16);
+        // 將圖形固定在畫面上，並讓它只在 UI 攝像機中顯示
+        graphics.setScrollFactor(0);
+        this.scene.cameras.main.ignore(graphics); // 讓主攝像機忽略這個圖形
     }
 
     public setColisions(player: Player) {
@@ -80,9 +111,18 @@ export class DungeonGenerator {
         });
     }
 
+    public getRoomMaps(): number[][][] {
+        return this.roomMaps;
+    }
+
     public generateRandomRooms(): void {
-        const rooms = this.createRandomDungeon();
-        this.createRoom(rooms)
+        this.roomMaps = this.createRandomDungeon();
+
+        // create start room
+        // 靠爲什麼我要把他的大小社的跟期他房間不一樣 我要瘋了 ==
+        this.createStartRoom(this.roomMaps[0][0]);
+        
+        this.createRoom(this.roomMaps)
     }
 
     private createRoom(roomMaps: number[][][]): void {
@@ -91,7 +131,15 @@ export class DungeonGenerator {
         // Iterate through each room
         for (let row = 0; row < roomMaps.length; row++) {
             for (let col = 0; col < roomMaps[row].length; col++) {
-                if (row === 0 && col === 0) continue; // skip start room
+                if (row === 0 && col === 0 && roomMaps[row][col][2] == 1) {
+                    // draw horizontal aisles for start room
+                    let openings = roomMaps[row][col];
+                    if (openings[2] === 1) {
+                        this.drawTiles(this.aisleGroundLayers, 'aisle-ground-horizontal', false, 0 + 15 * col + 23, 0 + 14 * row );
+                        this.drawTiles(this.aisleWallLayers, 'aisle-walls-horizontal', true, 0 + 15 * col + 23, 0 + 14 * row);
+                    }
+                    continue;
+                } // skip start room
 
                 // Calculate the position of the room on the map
                 let xOffset = col * roomSize;
@@ -102,15 +150,15 @@ export class DungeonGenerator {
                 if (openings.some(o => o === 1)) {
                     // Select the appropriate wall layer based on room openings configuration
                     let wallLayerNames = this.getWallLayerNames(openings);
-                    
+                
                     wallLayerNames.forEach(wallLayerName => {
                         // Draw rooms
-                        this.drawTiles(this.wallLayers, wallLayerName, true, xOffset + 15 * col, yOffset + 14 * row);
+                        this.drawTiles(this.wallLayers, wallLayerName, true, xOffset + 15 * col, yOffset + 14 * row);  
                     });
 
                     // draw grounds
                     this.drawTiles(this.groundLayers, 'battle-ground', false, xOffset + 15 * col, yOffset + 14 * row);
-                    
+
                     // draw vertical aisles
                     if (openings[1] === 1) {
                         this.drawTiles(this.aisleGroundLayers, 'aisle-ground-vertical', false, xOffset + 15 * col, yOffset + 14 * row - 22);

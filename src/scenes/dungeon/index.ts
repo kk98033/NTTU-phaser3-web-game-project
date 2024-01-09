@@ -1,6 +1,8 @@
 import { GameObjects, Scene, Tilemaps } from 'phaser';
 import { Player } from '../../classes/player';
 import { Enemy } from '../../classes/enemy';
+// @ts-ignore
+import { Minimap } from '../../classes/minimap';
 import { gameObjectsToObjectPoints } from '../../helpers/gameobject-to-object-point';
 
 import { EVENTS_NAME } from '../../consts';
@@ -20,6 +22,8 @@ export class Dungeon extends Scene {
     private chests!: Phaser.GameObjects.Sprite[];
     private enemies!: Enemy[];
 
+    private minimap!: Minimap;
+
     constructor() {
         super('dungeon-scene');
     }
@@ -28,6 +32,7 @@ export class Dungeon extends Scene {
         this.dungeonGenerator = new DungeonGenerator(this, this.physics);
         this.dungeonGenerator.initMap();
         this.dungeonGenerator.generateRandomRooms();
+        this.events.emit('dungeonGeneratorCreated', this.dungeonGenerator);
         // this.initMap();
         
         this.player = new Player(this, 16 * 16, 16 * 20);
@@ -36,6 +41,8 @@ export class Dungeon extends Scene {
         
         // this.physics.add.collider(this.player, this.wallsLayer);
         
+        this.minimap = new Minimap(this, this.dungeonGenerator.getRoomMaps(), 16);
+
         this.initCamera()
         // this.initChests();
         // this.initEnemies();
@@ -43,6 +50,14 @@ export class Dungeon extends Scene {
 
     update(): void {
         this.player.update();
+        this.player.getPlayerPosition(this.player.x, this.player.y);
+
+        // 計算玩家所在的房間索引
+        // let playerRoomCol = Math.floor(this.player.x / (16 * (30 + 15)));
+        // let playerRoomRow = Math.floor(this.player.y / (16 * (30 + 15)));
+        // console.log(playerRoomRow, playerRoomCol)
+
+        
     }
 
     private initMap(): void {
