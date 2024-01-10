@@ -21,19 +21,26 @@ export class DungeonGenerator {
     public aisleWallsVertical!: Phaser.Tilemaps.TilemapLayer;
     public aisleGroundVertical!: Phaser.Tilemaps.TilemapLayer;
 
-    private gameAssets!: Phaser.Tilemaps.TilemapLayer;
+    private roomAssets!: Phaser.Tilemaps.TilemapLayer;
 
     public roomMaps!: number[][][];
+
+    public roomStructures!: number[][];
+    public currentRooms: number;
 
     public points: any[];
 
     constructor(private scene: Phaser.Scene, private physics: Phaser.Physics.Arcade.ArcadePhysics) {
         this.points = [];
+        this.currentRooms = 0;
     }
 
     private mapWidth = 100;
     private mapHeight = 100;
     private tileSize = 16;
+
+    private endRoomX = 2;
+    private endRoomY = 2;
 
     public initMap(): void {
         this.drawBackground();
@@ -53,12 +60,19 @@ export class DungeonGenerator {
         this.wallLayers = this.map.createBlankLayer('wallLayers', this.tileset, 0, 0, 150, 150)!;
         this.aisleGroundLayers = this.map.createBlankLayer('aisleGroundLayers', this.tileset, 0, 0, 150, 150)!;
         this.aisleWallLayers = this.map.createBlankLayer('aisleWallLayers', this.tileset, 0, 0, 150, 150)!;
-        this.gameAssets = this.map.createBlankLayer('gameAssets', this.tileset, 0, 0, 150, 150)!;
+        this.roomAssets = this.map.createBlankLayer('roomAssets', this.tileset, 0, 0, 150, 150)!;
 
+        // ground: 1 or 2
+        // wall: 2
+        // room assets: 3
+        // player, camera: 10
+        // point: 2
         this.groundLayers.setDepth(2);
         this.wallLayers.setDepth(2);
         this.aisleGroundLayers.setDepth(2);
         this.aisleWallLayers.setDepth(2);
+
+        this.roomAssets.setDepth(3);
 
         // test
         // this.groundLayer = this.map.createLayer('battle-ground', this.tileset, 0, this.tileSize * 36)!;
@@ -82,19 +96,41 @@ export class DungeonGenerator {
         this.createRoom(this.roomMaps)
 
         // decide end room
-        let [endRoomX, endRoomY] = this.decideEndRoom();
-        console.log(endRoomX, endRoomY);
+        this.decideEndRoom();
+        this.generateFinalRoomAssets();
+        // console.log(this.endRoomX, this.endRoomY);
 
-        this.generateFinalRoomAssets(endRoomX, endRoomY);
+        // decide how many battle rooms in this map
+        this.decideRoomStructures();
+
+        // initialize all points
+        this.initPoints();
     }
 
-    private generateFinalRoomAssets(endRoomX: number, endRoomY: number): void {
+    private generateFinalRoomAssets(): void {
+        // TODO: decorate final assets
+        let offset = (30 + 15) * 16;
+        console.log(this.endRoomX, this.endRoomY);
+        this.drawTiles(this.roomAssets, 'end-room-layer1', false, (30 + 15) * this.endRoomY, (30 + 15 - 1) * this.endRoomX);
+    }
+    
+    // TODO: generate more room assets 3, 4, 5
+    private generateRoomAssets(): void {
+
+    }
+    
+    private initPoints(): void {
+        this.initFinalRoomPoints();
+    }
+
+    private initFinalRoomPoints(): void {
+        // draw final room physics object points
         const objects = this.map.filterObjects('NextLevelPoint', obj => obj.name === 'nextLevel') || [];
         const NextLevelPoints = gameObjectsToObjectPoints(objects);
         NextLevelPoints.forEach(point => {
             let data = { 
-                x: Math.floor(point.x) + (endRoomY) * (30 + 15) * 16, 
-                y: Math.floor(point.y) + (endRoomX) * (30 + 15) * 16, 
+                x: Math.floor(point.x) + (this.endRoomY) * (30 + 15) * 16, 
+                y: Math.floor(point.y) + (this.endRoomX) * (30 + 15 - 1) * 16, 
                 id: this.getTileIDByName(point.name) 
             }
             this.points.push(data);
@@ -104,13 +140,13 @@ export class DungeonGenerator {
         const chestPoints = gameObjectsToObjectPoints(chestObjects);
         chestPoints.forEach(point => {
             let data = { 
-                x: Math.floor(point.x) + (endRoomY) * (30 + 15) * 16, 
-                y: Math.floor(point.y) + (endRoomX) * (30 + 15) * 16, 
+                x: Math.floor(point.x) + (this.endRoomY) * (30 + 15 - 1) * 16, 
+                y: Math.floor(point.y) + (this.endRoomX) * (30 + 15) * 16, 
                 id: this.getTileIDByName(point.name) 
             }
             this.points.push(data);
         });
-        console.log(this.points);
+        // console.log(this.points);
     }
 
     public getTileIDByName(name: string): number {
@@ -124,7 +160,66 @@ export class DungeonGenerator {
         return this.points;
     }
 
-    private decideEndRoom(): number[] {
+    private decideRoomStructures(): void {
+        this.getRoomStructures();
+        
+        const length = 3;
+        const numBattleRooms = this.getRandomInt(2, this.currentRooms - 1);
+
+        let availableRooms = [];
+        for (let i = 0; i < length; i++) {
+            for (let j = 0; j < length; j++) {
+                // skip start, end rooms
+                if ((i === 0 && j === 0) || (i === this.endRoomX && j === this.endRoomY)) {
+                    continue;
+                }
+
+                if (this.roomStructures[i][j] === 1) {
+                    availableRooms.push([i, j]);
+                }
+            }
+        }
+
+        for (let i = 0; i < numBattleRooms && availableRooms.length; i++) {
+            let roomIndex = this.getRandomInt(0, availableRooms.length - 1);
+            let [x, y] = availableRooms[roomIndex];
+            this.roomStructures[x][y] = 2;
+            availableRooms.splice(roomIndex, 1);
+        }
+
+        availableRooms.forEach(([x, y]) => {
+            this.roomStructures[x][y] = this.getRandomInt(3, 5); 
+        });
+
+        this.roomStructures[0][0] = -1; // start room
+        this.roomStructures[this.endRoomX][this.endRoomY] = -2; // end room
+
+        console.log('sdfasdfas', numBattleRooms,this.roomStructures);
+    }
+
+    private getRandomInt(min: number, max: number): number {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    private getRoomStructures() {
+        this.roomStructures = Array(3).fill(null).map(() => Array(3).fill(0));
+        this.currentRooms = 0;
+
+        // get available room positions
+        for (let i = 0; i < this.roomMaps.length; i++) {
+            for (let j = 0; j < this.roomMaps[i].length; j++) {
+                if (!this.roomMaps[i][j].every(val => val === 0)) {
+                    this.currentRooms += 1;
+                    this.roomStructures[i][j] = 1;
+                }
+            }
+        }
+        this.currentRooms -= 2; // exclude start, end rooms
+
+        console.log(this.roomStructures)
+    }
+
+    private decideEndRoom(): void{
         let possilblePositions = [
             [2,0], [2,1], [2,2], [0,2], [1,2],
         ];
@@ -138,10 +233,18 @@ export class DungeonGenerator {
             }
         });
         
-        if (canBeEndRoom.length === 0) return [2, 2]; // default end room
+        // default end room
+        if (canBeEndRoom.length === 0) {
+            this.endRoomX = 2;
+            this.endRoomY = 2;
+            return;
+        }
 
+        // pick a room
         let randomIndex = Math.floor(Math.random() * canBeEndRoom.length);
-        return canBeEndRoom[randomIndex]
+        this.endRoomX = canBeEndRoom[randomIndex][0];
+        this.endRoomY = canBeEndRoom[randomIndex][1];
+        return;
     }
 
     public createStartRoom(opening: number[]): void {
@@ -164,13 +267,21 @@ export class DungeonGenerator {
     public drawBackground(): void {
         // draw background
         let graphics = this.scene.add.graphics();
-        graphics.lineStyle(30, 0xff0000); // 紅色
+
+        // TODO: make a beautiful backgorund
+        // red outline
+        graphics.lineStyle(30, 0xff0000); 
         graphics.strokeRect(1, 1, (this.mapWidth + 30) * 16, (this.mapWidth + 30) * 16);
+
+        // draw background
         graphics.fillStyle(0x666666, 0.5);
         graphics.fillRect(0, 0, (this.mapWidth + 30) * 16, (this.mapWidth + 30) * 16);
-        // 將圖形固定在畫面上，並讓它只在 UI 攝像機中顯示
+        
+        // finx on camera
         graphics.setScrollFactor(0);
-        this.scene.cameras.main.ignore(graphics); // 讓主攝像機忽略這個圖形
+
+        // ignore minimap on main camer
+        this.scene.cameras.main.ignore(graphics);
     }
 
     public setColisions(player: Player) {

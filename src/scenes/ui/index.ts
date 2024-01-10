@@ -58,14 +58,12 @@ export class UIScene extends Scene {
         // TODO: alow to enter next level
         this.dungeonHandler = (status) => {
             this.cameras.main.setBackgroundColor('rgba(0,0,0,0.6)');
-            this.game.scene.pause('level-1-scene');
+            this.game.scene.pause('dungeon-scene');
             this.gameEndPhrase = new Phaser.GameObjects.Text(
                 this,
                 this.game.scale.width / 2,
                 this.game.scale.height * 0.4,
-                status === GameStatus.LOSE
-                    ? `WASTED!\nCLICK TO RESTART`
-                    : `YOU ARE ROCK!\nCLICK TO RESTART`,
+                 `TODO: Can Pick a New Effect`,
                 {
                     fontFamily: 'Arial',
                     fontSize: '32px',
@@ -78,15 +76,14 @@ export class UIScene extends Scene {
                 this.game.scale.width / 2 - this.gameEndPhrase.width / 2,
                 this.game.scale.height * 0.4,
             );
-            if (GameStatus.WIN) {
-                this.input.on('pointerdown', () => {
-                    this.game.events.off(EVENTS_NAME.chestLoot, this.chestLootHandler);
-                    this.game.events.off(EVENTS_NAME.goNextLevel, this.gameEndHandler);
-                    this.scene.get('dungeon-scene').scene.restart();
-                    this.scene.restart();
-                    GameStatus.EXPLORING;
-                });
-            }
+
+            this.input.on('pointerdown', () => {
+                this.game.events.off(EVENTS_NAME.chestLoot, this.chestLootHandler);
+                this.game.events.off(EVENTS_NAME.goNextLevel, this.gameEndHandler);
+                this.scene.get('dungeon-scene').scene.restart();
+                this.scene.restart();
+                GameStatus.EXPLORING;
+            });
         };
 
         // win ui

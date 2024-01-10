@@ -13,7 +13,7 @@ type GameConfigExtended = Types.Core.GameConfig & {
 };
 
 export const gameConfig: GameConfigExtended = {
-    title: 'Phaser game tutorial',
+    title: 'Random Dungeon Game',
     type: Phaser.CANVAS,
     parent: 'game',
     backgroundColor: '#351f1b',
@@ -26,7 +26,7 @@ export const gameConfig: GameConfigExtended = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: false,
+            debug: true,
         },
     },
     render: {

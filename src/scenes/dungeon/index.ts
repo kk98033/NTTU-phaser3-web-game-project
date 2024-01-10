@@ -54,31 +54,21 @@ export class Dungeon extends Scene {
     update(): void {
         this.player.update();
         this.player.getPlayerPosition(this.player.x, this.player.y);
-
-        // 計算玩家所在的房間索引
-        // let playerRoomCol = Math.floor(this.player.x / (16 * (30 + 15)));
-        // let playerRoomRow = Math.floor(this.player.y / (16 * (30 + 15)));
-        // console.log(playerRoomRow, playerRoomCol)
-
         
     }
 
     private initPoints(): void {
         this.dungeonGenerator.getPoints().forEach(point => {
             let sprite = this.physics.add.sprite(point.x, point.y, 'tiles_spr', point.id).setScale(2);
-            sprite.setDepth(9);
+            sprite.setDepth(2);
 
             this.physics.add.overlap(this.player, sprite, (player, collidedSprite) => {
-                // 檢查是否是特定 ID
                 if (point.id === 357) {
-                    // 處理進入下一關的邏輯
-                    GameStatus.WIN;
+                    // next dungeon entrance
                     this.game.events.emit(EVENTS_NAME.goNextLevel);
-                    // 例如重啟場景或轉到新場景
-                    // this.scene.restart();
-                    // 或者 this.scene.start('nextLevelScene');
+
                 } else {
-                    // 其他情況的處理
+                    // chest
                     this.game.events.emit(EVENTS_NAME.chestLoot);
                     this.cameras.main.flash();
                 }
