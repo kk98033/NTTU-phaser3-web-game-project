@@ -66,14 +66,15 @@ export class Dungeon extends Scene {
                 if (point.id === 357) {
                     // next dungeon entrance
                     this.game.events.emit(EVENTS_NAME.goNextLevel);
+                    collidedSprite.destroy();
 
                 } else {
                     // chest
                     this.game.events.emit(EVENTS_NAME.chestLoot);
                     this.cameras.main.flash();
+                    collidedSprite.destroy();
                 }
     
-                collidedSprite.destroy();
             });
         });
     }

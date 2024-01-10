@@ -68,9 +68,9 @@ export class UIScene extends Scene {
                     fontFamily: 'Arial',
                     fontSize: '32px',
                     align: 'center',
-                    color: status === GameStatus.LOSE ? '#ff0000' : '#ffffff'
+                    color: '#ff0000'
                 },
-            );
+                );
             this.add.existing(this.gameEndPhrase);
             this.gameEndPhrase.setPosition(
                 this.game.scale.width / 2 - this.gameEndPhrase.width / 2,
@@ -82,7 +82,6 @@ export class UIScene extends Scene {
                 this.game.events.off(EVENTS_NAME.goNextLevel, this.gameEndHandler);
                 this.scene.get('dungeon-scene').scene.restart();
                 this.scene.restart();
-                GameStatus.EXPLORING;
             });
         };
 

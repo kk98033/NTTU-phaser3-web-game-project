@@ -111,7 +111,8 @@ export class DungeonGenerator {
         // TODO: decorate final assets
         let offset = (30 + 15) * 16;
         console.log(this.endRoomX, this.endRoomY);
-        this.drawTiles(this.roomAssets, 'end-room-layer1', false, (30 + 15) * this.endRoomY, (30 + 15 - 1) * this.endRoomX);
+        this.drawTiles(this.roomAssets, 'end-room-layer1', true, (30 + 15) * this.endRoomY, (30 + 15 - 1) * this.endRoomX);
+        this.drawTiles(this.roomAssets, 'end-room-layer2', false, (30 + 15) * this.endRoomY, (30 + 15 - 1) * this.endRoomX);
     }
     
     // TODO: generate more room assets 3, 4, 5
@@ -140,8 +141,8 @@ export class DungeonGenerator {
         const chestPoints = gameObjectsToObjectPoints(chestObjects);
         chestPoints.forEach(point => {
             let data = { 
-                x: Math.floor(point.x) + (this.endRoomY) * (30 + 15 - 1) * 16, 
-                y: Math.floor(point.y) + (this.endRoomX) * (30 + 15) * 16, 
+                x: Math.floor(point.x) + (this.endRoomY) * (30 + 15) * 16, 
+                y: Math.floor(point.y) + (this.endRoomX) * (30 + 15 - 1) * 16, 
                 id: this.getTileIDByName(point.name) 
             }
             this.points.push(data);
@@ -287,17 +288,21 @@ export class DungeonGenerator {
     public setColisions(player: Player) {
         this.scene.physics.world.setBounds(0, 0, (this.mapWidth + 30) * 16, (this.mapHeight + 30) * 16); // set game bounds
 
-        // start room
+        // start room layer
         this.startRoomWalls.setCollisionByProperty({ collides: true });
         this.physics.add.collider(player, this.startRoomWalls);
 
-        // wall layers
+        // wall layer
         this.wallLayers.setCollisionByProperty({ collides: true });
         this.physics.add.collider(player, this.wallLayers);
         
-        // aisle layers
+        // aisle layer
         this.aisleWallLayers.setCollisionByProperty({ collides: true });
         this.physics.add.collider(player, this.aisleWallLayers);
+        
+        // room assets layer
+        this.roomAssets.setCollisionByProperty({ collides: true });
+        this.physics.add.collider(player, this.roomAssets);
 
         // this.showDebugWalls();
     }
