@@ -1,0 +1,606 @@
+{
+    "frames": [
+        {
+            "filename": "girl-attack1",
+            "frame": {
+                "w": 41,
+                "h": 42,
+                "x": 0,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl-attack2",
+            "frame": {
+                "w": 41,
+                "h": 42,
+                "x": 41,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl1",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 0,
+                "y": 42
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl3",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 24,
+                "y": 42
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl2",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 48,
+                "y": 42
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl4",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 0,
+                "y": 66
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl6",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 24,
+                "y": 66
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl7",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 48,
+                "y": 66
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl5",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 82,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl8",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 82,
+                "y": 24
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl11",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 72,
+                "y": 48
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl12",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 0,
+                "y": 90
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl13",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 24,
+                "y": 90
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl10",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 48,
+                "y": 90
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl9",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 72,
+                "y": 72
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl14",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 106,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl17",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 106,
+                "y": 24
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl15",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 96,
+                "y": 48
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl16",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 96,
+                "y": 72
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl18",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 0,
+                "y": 114
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl19",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 24,
+                "y": 114
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl20",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 48,
+                "y": 114
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl21",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 72,
+                "y": 96
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl22",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 96,
+                "y": 96
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl23",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 130,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl24",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 130,
+                "y": 24
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl25",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 120,
+                "y": 48
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl26",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 120,
+                "y": 72
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl27",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 120,
+                "y": 96
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl28",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 0,
+                "y": 138
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl29",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 24,
+                "y": 138
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl30",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 48,
+                "y": 138
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl31",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 72,
+                "y": 120
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl32",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 96,
+                "y": 120
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl33",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 120,
+                "y": 120
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl34",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 154,
+                "y": 0
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl35",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 154,
+                "y": 24
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl36",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 144,
+                "y": 48
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl37",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 144,
+                "y": 72
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl38",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 144,
+                "y": 96
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl39",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 144,
+                "y": 120
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl40",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 0,
+                "y": 162
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl41",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 24,
+                "y": 162
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl42",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 48,
+                "y": 162
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl43",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 72,
+                "y": 144
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "girl44",
+            "frame": {
+                "w": 24,
+                "h": 24,
+                "x": 96,
+                "y": 144
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        }
+    ],
+    "meta": {
+        "description": "Atlas generado con Atlas Packer Gamma V2",
+        "web": "https://gammafp.github.io/atlas-packer-phaser/"
+    }
+}
