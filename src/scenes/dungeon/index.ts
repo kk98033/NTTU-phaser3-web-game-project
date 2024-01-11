@@ -1,8 +1,8 @@
 import { GameObjects, Scene, Tilemaps } from 'phaser';
 import { Player } from '../../classes/player';
 import { Enemy } from '../../classes/enemy';
-// @ts-ignore
 import { Minimap } from '../../classes/minimap';
+import { Battle } from '../../classes/battle';
 import { gameObjectsToObjectPoints } from '../../helpers/gameobject-to-object-point';
 
 import { EVENTS_NAME, GameStatus } from '../../consts';
@@ -25,16 +25,20 @@ export class Dungeon extends Scene {
 
     private minimap!: Minimap;
 
+    private battleEvent!: Battle;
+
     constructor() {
         super('dungeon-scene');
     }
     
     create(): void {
-        // this.initMap();
-        
         this.player = new Player(this, 16 * 16, 16 * 20);
         this.player.setDepth(10);
+
+        // for battle rooms
+        this.battleEvent = new Battle(this, this.physics, this.player);
         
+        // create reandom dungeon
         this.dungeonGenerator = new DungeonGenerator(this, this.physics);
         this.dungeonGenerator.initMap();
         this.dungeonGenerator.generateRandomRooms();
@@ -43,17 +47,25 @@ export class Dungeon extends Scene {
         
         // this.physics.add.collider(this.player, this.wallsLayer);
         
+        // create minimap
         this.minimap = new Minimap(this, this.dungeonGenerator.getRoomMaps(), 16);
 
+        // create main camera
         this.initCamera()
         // this.initChests();
         // this.initEnemies();
+
         this.initPoints();
     }
 
     update(): void {
         this.player.update();
-        this.player.getPlayerPosition(this.player.x, this.player.y);
+        let [isInRoom, gridRow, gridCol] = this.player.getPlayerPosition(this.player.x, this.player.y);
+
+        // in battle room
+        if (this.battleEvent.isInBattleRoom(isInRoom, this.dungeonGenerator.getRoomsID(gridRow, gridCol))) {
+            this.battleEvent.lockRoom(gridRow, gridCol);
+        }
         
     }
 

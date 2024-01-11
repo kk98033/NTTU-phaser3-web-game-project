@@ -28,7 +28,7 @@ export class Minimap {
 
 
         // this.uiCamera = scene.cameras.add(0, 0, scene.cameras.main.width, scene.cameras.main.height);
-        console.log(scene.cameras.main.width, this.mapWidth, this.mapHeight)
+        // console.log(scene.cameras.main.width, this.mapWidth, this.mapHeight)
         const uiCameraX = ((0) * 16);
         const uiCameraY = -(this.mapHeight- 28) * 16;
         this.uiCamera = this.scene.cameras.add(uiCameraX, uiCameraY, this.mapWidth * 16, this.mapHeight * 16);
@@ -64,7 +64,7 @@ export class Minimap {
     drawMinimap() {
         // Clear the previous drawing
         // this.renderTexture.clear();
-        console.log(this.roomMaps);
+        // console.log(this.roomMaps);
         // Create a Graphics object for drawing the rectangles
         const graphics = this.scene.add.graphics();
         graphics.clear();

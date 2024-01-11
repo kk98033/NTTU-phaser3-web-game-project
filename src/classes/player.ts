@@ -169,11 +169,11 @@ export class Player extends Actor {
 
         if (inRoomCol && inRoomRow) {
             // in room
-            console.log('inroom', gridCol, gridRow);
+            // console.log('inroom', gridCol, gridRow);
 
         } else {
             // in aisle
-            console.log('in aisle', gridCol, gridRow)
+            // console.log('in aisle', gridCol, gridRow)
 
         }
         

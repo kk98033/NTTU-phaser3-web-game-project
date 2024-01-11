@@ -67,7 +67,7 @@ export class DungeonGenerator {
         // room assets: 3
         // player, camera: 10
         // point: 2
-        this.groundLayers.setDepth(2);
+        this.groundLayers.setDepth(1);
         this.wallLayers.setDepth(2);
         this.aisleGroundLayers.setDepth(2);
         this.aisleWallLayers.setDepth(2);
@@ -110,7 +110,7 @@ export class DungeonGenerator {
     private generateFinalRoomAssets(): void {
         // TODO: decorate final assets
         let offset = (30 + 15) * 16;
-        console.log(this.endRoomX, this.endRoomY);
+        // console.log(this.endRoomX, this.endRoomY);
         this.drawTiles(this.roomAssets, 'end-room-layer1', true, (30 + 15) * this.endRoomY, (30 + 15 - 1) * this.endRoomX);
         this.drawTiles(this.roomAssets, 'end-room-layer2', false, (30 + 15) * this.endRoomY, (30 + 15 - 1) * this.endRoomX);
     }
@@ -195,7 +195,7 @@ export class DungeonGenerator {
         this.roomStructures[0][0] = -1; // start room
         this.roomStructures[this.endRoomX][this.endRoomY] = -2; // end room
 
-        console.log('sdfasdfas', numBattleRooms,this.roomStructures);
+        console.log('room structure: ', numBattleRooms,this.roomStructures);
     }
 
     private getRandomInt(min: number, max: number): number {
@@ -217,8 +217,17 @@ export class DungeonGenerator {
         }
         this.currentRooms -= 2; // exclude start, end rooms
 
-        console.log(this.roomStructures)
+        // console.log(this.roomStructures)
     }
+    
+    public getRoomStructuresArray()  {
+        return this.roomStructures;
+    }
+
+    public getRoomsID(row: number, col: number)  {
+        return this.roomStructures[row][col];
+    }
+     
 
     private decideEndRoom(): void{
         let possilblePositions = [

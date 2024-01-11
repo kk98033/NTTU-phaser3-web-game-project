@@ -5,7 +5,8 @@ import { EVENTS_NAME } from '../consts';
 
 export class Enemy extends Actor {
     private target: Player;
-    private AGRESSOR_RADIUS = 100;
+    private AGRESSOR_RADIUS = 10 * 16;
+    private moveSpeed = 50;
 
     private attackHandler: () => void;
 
@@ -16,7 +17,6 @@ export class Enemy extends Actor {
         texture: string,
         target: Player,
         frame?: string | number,
-
     ) {
         super(scene, x, y, texture, frame);
         this.target = target;
@@ -37,6 +37,7 @@ export class Enemy extends Actor {
                 this.getDamage();
                 this.disableBody(true, false);
                 this.scene.time.delayedCall(300, () => {
+                    this.die();
                     this.destroy();
                 });
             }
@@ -48,18 +49,40 @@ export class Enemy extends Actor {
         });
     }
 
+    die() {
+        this.emit('enemy-defeated', this);
+        this.destroy();
+    }
+    
     preUpdate(): void {
-        if (
-            Phaser.Math.Distance.BetweenPoints(
-                { x: this.x, y: this.y },
-                { x: this.target.x, y: this.target.y },
-            ) < this.AGRESSOR_RADIUS
-        ) {
-            this.getBody().setVelocityX(this.target.x - this.x);
-            this.getBody().setVelocityY(this.target.y - this.y);
+        const distance = Phaser.Math.Distance.BetweenPoints(
+            { x: this.x, y: this.y },
+            { x: this.target.x, y: this.target.y }
+        );
+
+        if (distance < this.AGRESSOR_RADIUS) {
+            const directionX = this.target.x - this.x;
+            const directionY = this.target.y - this.y;
+            const normalizedDirectionX = directionX / distance;
+            const normalizedDirectionY = directionY / distance;
+
+            this.getBody().setVelocityX(normalizedDirectionX * this.moveSpeed);
+            this.getBody().setVelocityY(normalizedDirectionY * this.moveSpeed);
+
         } else {
             this.getBody().setVelocity(0);
         }
+        // if (
+        //     Phaser.Math.Distance.BetweenPoints(
+        //         { x: this.x, y: this.y },
+        //         { x: this.target.x, y: this.target.y },
+        //     ) < this.AGRESSOR_RADIUS
+        // ) {
+        //     this.getBody().setVelocityX(this.target.x - this.x);
+        //     this.getBody().setVelocityY(this.target.y - this.y);
+        // } else {
+        //     this.getBody().setVelocity(0);
+        // }
     }
 
     public setTarget(target: Player): void {
