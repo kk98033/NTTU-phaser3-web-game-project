@@ -33,17 +33,22 @@ export class Dungeon extends Scene {
 
     preload() {
         // load background music
-        // this.load.audio('backgroundMusic', 'path/to/backgroundMusic.mp3');
+        this.load.audio('backgroundMusic', '../../assets/mp3/Joshua McLean - Mountain Trials.mp3');
     }
     
     create(data: any): void {
         this.game.events.on(EVENTS_NAME.getHealth, this.posionHandler, this);
         // get data from previous level
-        if (data) {
+        if (data && typeof data.health === 'number') {
             this.player = new Player(this, 16 * 16, 16 * 20, data.health);
             
         } else {
+            console.log(data, 'sdfasfdasfdasf')
             this.player = new Player(this, 16 * 16, 16 * 20);
+            // TODO: background music
+            // player background music ＯＮＣＥ
+            let bgMusic = this.sound.add('backgroundMusic', { loop: true });
+            bgMusic.play();
         }
         this.game.registry.set('player', this.player);
         this.player.setDepth(10);
@@ -74,11 +79,6 @@ export class Dungeon extends Scene {
 
         this.cameras.main.fadeIn(1000, 0, 0, 0);
         // this.minimap.uiCamera.fadeIn(1000, 0, 0, 0);
-        
-        // TODO: background music
-        // player background music
-        // let bgMusic = this.sound.add('backgroundMusic', { loop: true });
-        // bgMusic.play();
     }
 
     update(): void {

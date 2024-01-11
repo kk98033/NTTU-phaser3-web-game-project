@@ -36,6 +36,9 @@ export class Player extends Actor {
     private currentDirection = 3; 
 
     private attackingCD = 500;
+    private cooldownBar: Phaser.GameObjects.Graphics;
+    private cooldownBarWidth!: number;
+    private cooldownBarHeight!: number;
 
     constructor(scene: Phaser.Scene, x: number, y: number, initHP = null) {
         // super(scene, x, y, 'king');
@@ -68,7 +71,8 @@ export class Player extends Actor {
             this.anims.play('girl-attack', true);
             this.scene.game.events.emit(EVENTS_NAME.attack);
             this.isAnimating = true;
-            this.isAttacking = true;
+
+            this.attack()
         });
         // this.keySpace.on('down', (event: KeyboardEvent) => {
             
@@ -101,6 +105,15 @@ export class Player extends Actor {
             }
         }, this);
 
+        // cooldown bars
+        this.cooldownBar = scene.add.graphics();
+        this.cooldownBar.fillStyle(0xff0000, 1); 
+        this.cooldownBarWidth = 4;
+        this.cooldownBarHeight = 20;
+        this.resetCooldownBar(); 
+        this.cooldownBar.setDepth(11)
+
+
         // PHYSICS
         // girl
         this.playerWidth = 24;
@@ -125,6 +138,12 @@ export class Player extends Actor {
 
     update(): void {
         if (this.isDead) return;
+
+        // cooldown bar position
+        if (this.cooldownBar.visible) {
+            this.cooldownBar.x = this.x + this.width / 2 + 10;
+            this.cooldownBar.y = this.y - this.height / 2 - this.cooldownBarHeight / 4;
+        }
 
         this.getBody().setVelocity(0);
         this.isMoving = false;
@@ -199,6 +218,33 @@ export class Player extends Actor {
         this.hpValue.setPosition(this.x, this.y - this.height * 0.4);
         this.hpValue.setOrigin(0.8, 0.5);
         this.hpValue.setDepth(10);
+    }
+
+    public attack(): void {
+        if (this.isAttacking) {
+            return;
+        }
+
+        this.isAttacking = true;
+        this.cooldownBar.visible = true;
+        this.cooldownBar.scaleY = 1;
+
+        this.scene.tweens.add({
+            targets: this.cooldownBar,
+            scaleY: 0,
+            duration: this.attackingCD + 333,
+            ease: 'Linear',
+            onComplete: () => {
+                this.cooldownBar.visible = false;
+            }
+        });
+    }
+
+    resetCooldownBar() {
+        this.cooldownBar.clear();
+        this.cooldownBar.fillStyle(0xffffff, 0.7);
+        this.cooldownBar.fillRect(0, 0, this.cooldownBarWidth, this.cooldownBarHeight);
+        this.cooldownBar.visible = false;
     }
 
     private playIdleAnimation() {
@@ -383,6 +429,7 @@ export class Player extends Actor {
         });
 
         // girl attack
+        // duration around 333ms
         this.scene.anims.create({
             key: 'girl-attack',
             frames: this.scene.anims.generateFrameNames('a-girl', {
