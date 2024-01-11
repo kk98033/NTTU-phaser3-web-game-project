@@ -32,8 +32,7 @@ export class Dungeon extends Scene {
     }
 
     preload() {
-        // load background music
-        this.load.audio('backgroundMusic', '../../assets/mp3/Joshua McLean - Mountain Trials.mp3');
+        
     }
     
     create(data: any): void {
@@ -45,7 +44,7 @@ export class Dungeon extends Scene {
         } else {
             console.log(data, 'sdfasfdasfdasf')
             this.player = new Player(this, 16 * 16, 16 * 20);
-            // TODO: background music
+
             // player background music ＯＮＣＥ
             let bgMusic = this.sound.add('backgroundMusic', { loop: true });
             bgMusic.play();

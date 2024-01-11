@@ -27,6 +27,9 @@ export class LoadingScene extends Scene {
             url: 'tilemaps/tiles/dungeon-16-16.png',
         });
 
+        // load background music
+        this.load.audio('backgroundMusic', 'mp3/background-music.mp3');
+
         this.load.tilemapTiledJSON('dungeon', 'tilemaps/json/dungeon.json');
         
         this.load.tilemapTiledJSON('dungeonAssets', 'tilemaps/json/dungeon-assets.json');
