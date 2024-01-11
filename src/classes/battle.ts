@@ -2,6 +2,8 @@ import { gameObjectsToObjectPoints } from '../helpers/gameobject-to-object-point
 import { Player } from "./player";
 import { Enemy } from './enemy';
 
+import { EVENTS_NAME, GameStatus } from '../consts';
+
 
 export class Battle {
     private map!: Phaser.Tilemaps.Tilemap;
@@ -16,6 +18,8 @@ export class Battle {
     private enemies!: Enemy[];
 
     private tileSize: number;
+
+    private isDroppedChestOnThisRoom = false;
 
     constructor(private scene: Phaser.Scene, private physics: Phaser.Physics.Arcade.ArcadePhysics, private player: Player) {
         // 1 => explored
@@ -39,18 +43,125 @@ export class Battle {
         // this.closedDoorsGroundLayer.setDepth(3);
     }
 
-    setupEnemyDefeatedListener() {
+    private setupEnemyDefeatedListener() {
         this.enemies.forEach(enemy => {
             enemy.on('enemy-defeated', () => {
                 this.checkAndRemoveWalls();
+                this.dropLoot(enemy);
             });
         });
     }
 
-    checkAndRemoveWalls() {
+    private dropLoot(enemy: Enemy) {
+        // 10% to drop a loot
+        const randomChance = Math.random() * 100;
+
+        if (randomChance < 10) {
+            // pick potion or coin
+            if (Math.random() < 0.5) {
+                this.dropHealthPotion(enemy.x, enemy.y);
+            } else {
+                this.dropCoin(enemy.x, enemy.y);
+            }
+        }
+    }
+
+    // TODO: get potion and coin
+    private dropHealthPotion(enemyX: number, enemyY: number) {
+        let potion = this.physics.add.sprite(enemyX, enemyY, 'tiles_spr', 466)
+            .setScale(1)
+            .setDepth(9);
+    
+        this.physics.add.overlap(this.player, potion, (player, collidedPotion) => {
+            console.log("get health potion!");
+            collidedPotion.destroy();
+        });
+    }
+
+    private dropCoin(enemyX: number, enemyY: number) {
+        let coin = this.physics.add.sprite(enemyX, enemyY, 'tiles_spr', 562)
+            .setScale(1)
+            .setDepth(9);
+    
+        this.physics.add.overlap(this.player, coin, (player, collidedCoin) => {
+            console.log("get coin!");
+            collidedCoin.destroy();
+        });
+    }
+
+    private spawnChest(row: number, col: number) {
+        console.log('spawn chest')
+        // get all chest points
+        const chestPoints = gameObjectsToObjectPoints(
+            this.map.filterObjects('ChestsPoint', obj => obj.name === 'ChestPoint') || []
+        );
+
+        // random pick 1 point to spawn chest
+        const selectedPoint = this.getRandomPoints(chestPoints, 1)[0];
+
+        // spawn chest
+        this.scene.time.delayedCall(2000, () => {
+            // calcute chest position
+            const targetX = Math.floor(selectedPoint.x) + col * (30 + 15) * 16;
+            const targetY = Math.floor(selectedPoint.y) + row * (30 + 15 - 1) * 16;
+        
+            // create chest outside the screen
+            let chest = this.physics.add.sprite(targetX, -100, 'tiles_spr', 627)
+                .setScale(2)
+                .setDepth(2);
+        
+            // use tweens to move chest 
+            this.scene.tweens.add({
+                targets: chest,
+                y: targetY,
+                duration: 1000, 
+                ease: 'Power2', // 动画缓动类型，可根据需要调整
+                onComplete: () => {
+                    // shake camera after chest dropped down
+                    this.scene.cameras.main.shake(200, 0.01);
+                }
+            });
+        
+            // add physics
+            this.physics.add.overlap(this.player, chest, (player, collidedChest) => {
+                this.scene.game.events.emit(EVENTS_NAME.chestLoot);
+                this.scene.cameras.main.flash();
+                collidedChest.destroy();
+            });
+        
+            // add listener
+            this.setupEnemyDefeatedListener();
+        });
+
+        // this.scene.time.delayedCall(2000, () => {
+        //     let sprite = this.physics.add.sprite(Math.floor(selectedPoint.x) + (col) * (30 + 15) * 16, Math.floor(selectedPoint.y) + (row) * (30 + 15 - 1) * 16, 'tiles_spr', 627)
+        //             .setScale(2)
+        //             .setDepth(2);
+
+        //     // add physics
+        //     this.physics.add.overlap(this.player, sprite, (player, collidedSprite) => {
+        //         this.scene.game.events.emit(EVENTS_NAME.chestLoot);
+        //         this.scene.cameras.main.flash();
+        //         collidedSprite.destroy();
+        //     });
+
+        //     this.setupEnemyDefeatedListener();
+        // });
+    }
+
+    private checkAndRemoveWalls() {
         const areAllEnemiesDefeated = this.enemies.every(enemy => enemy.active === false);
+        // all enemies are defeated
         if (areAllEnemiesDefeated) {
             this.unlockRoom();
+            console.log('unlock roomm');
+
+            let [isInRoom, gridRow, gridCol] = this.player.getPlayerPosition(this.player.x, this.player.y);
+
+            if (!this.isDroppedChestOnThisRoom) {
+                this.spawnChest(gridRow, gridCol);
+            }
+            this.isDroppedChestOnThisRoom = true;
         }
     }
 
@@ -61,42 +172,70 @@ export class Battle {
         return false;
     }
 
-    public generateEnemys(row: number, col: number) {
+    public spawnEnemys(row: number, col: number) {
         // random pick 5 ~ 10 enemys
         let enemyAmount = Math.floor(Math.random() * 10) + 5;
         let eliteEnemy = 1 ? enemyAmount <= 5 : 0;
 
         this.initEnemies(enemyAmount, row, col);
-
-        
     }
 
     private initEnemies(enemyAmount: number, row: number, col: number): void {
-        // get all points
+        this.enemies = [];
+        // Get all enemy spawn points
         const enemiesPoints = gameObjectsToObjectPoints(
             this.map.filterObjects('EnemiesPoint', obj => obj.name === 'EnemyPoint') || []
         );
-
-        // random pick n points to spawn enemies
+    
+        // Randomly pick n points to spawn enemies
         const selectedPoints = this.getRandomPoints(enemiesPoints, enemyAmount);
-
-        // spawn enemies
-        this.scene.time.delayedCall(1000, () => {
-            this.enemies = selectedPoints.map((enemyPoint) =>
-                new Enemy(this.scene, Math.floor(enemyPoint.x) + (col) * (30 + 15) * 16, Math.floor(enemyPoint.y) + (row) * (30 + 15 - 1) * 16, 'tiles_spr', this.player, 503)
+    
+        // Spawn each enemy with a delay and fade-in animation
+        selectedPoints.forEach((enemyPoint, index) => {
+            this.scene.time.delayedCall(1000 * index, () => {
+                // Calculate spawn position
+                const x = Math.floor(enemyPoint.x) + col * (30 + 15) * 16;
+                const y = Math.floor(enemyPoint.y) + row * (30 + 15 - 1) * 16;
+    
+                // Create enemy initially invisible
+                const enemy = new Enemy(this.scene, x, y, 'tiles_spr', this.player, 503)
                     .setName(enemyPoint.id.toString())
                     .setScale(1.5)
-                    .setDepth(10),
-            );
-            // add physics
-            this.physics.add.collider(this.enemies, this.closedDoorsWallLayer!);
-            this.physics.add.collider(this.enemies, this.enemies);
-            this.physics.add.collider(this.player, this.enemies, (obj1, obj2) => {
-                (obj1 as Player).getDamage(1);
+                    .setDepth(10)
+                    .setAlpha(0); // Start with alpha 0 (invisible)
+    
+                // Animate enemy fade-in
+                this.scene.tweens.add({
+                    targets: enemy,
+                    alpha: 1, // Target alpha value (fully visible)
+                    duration: 2000, // Duration of the fade-in effect
+                    ease: 'Power2', // Easing function
+                    onStart: () => {
+                        // Create particle effect when the animation starts
+                        this.createParticleEffect(x, y);
+                    }
+                });
+    
+                // Add enemy to the enemies array
+                this.enemies.push(enemy);
+    
+                // Add physics interactions
+                this.physics.add.collider(enemy, this.closedDoorsWallLayer!);
+                this.physics.add.collider(enemy, this.enemies);
+                this.physics.add.collider(this.player, enemy, (player, collidedEnemy) => {
+                    (player as Player).getDamage(1);
+                });
+    
+                // Set up listener for when enemies are defeated
+                this.setupEnemyDefeatedListener();
             });
-
-            this.setupEnemyDefeatedListener();
         });
+    }
+    
+    
+    private createParticleEffect(x: number, y: number) {
+        // Create particle effect logic here
+        // Example: this.add.particles('particleKey').createEmitter({ ... });
     }
 
     private getRandomPoints(points: any[], n: number): any[] {
@@ -140,6 +279,7 @@ export class Battle {
     }
 
     public lockRoom(row: number, col: number) {
+        this.isDroppedChestOnThisRoom = false;
         if (this.roomStatus[row][col] === 1) {
             // if explored, don't lock the room again
             return;
@@ -149,13 +289,13 @@ export class Battle {
             // draw walls to block entrance
             this.resetLayer(this.closedDoorsWallLayer);
             this.resetLayer(this.closedDoorsGroundLayer);
-            
+
             this.drawTiles(this.closedDoorsGroundLayer, 'closed-doors-ground', false, col * (30 + 15), row * (30 + 15 - 1));
             this.drawTiles(this.closedDoorsWallLayer, 'closed-doors-walls', true, col * (30 + 15), row * (30 + 15 - 1));
 
             this.setColisions();
     
-            this.generateEnemys(row, col);
+            this.spawnEnemys(row, col);
 
             this.checkAndTeleportPlayer(row, col);
         });

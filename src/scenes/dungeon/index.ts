@@ -80,7 +80,7 @@ export class Dungeon extends Scene {
     private initPoints(): void {
         this.dungeonGenerator.getPoints().forEach(point => {
             let sprite = this.physics.add.sprite(point.x, point.y, 'tiles_spr', point.id).setScale(2);
-            sprite.setDepth(2);
+            sprite.setDepth(9);
 
             this.physics.add.overlap(this.player, sprite, (player, collidedSprite) => {
                 if (point.id === 357) {

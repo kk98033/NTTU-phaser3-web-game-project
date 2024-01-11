@@ -14,6 +14,7 @@ export class DungeonGenerator {
     private wallLayers!: Phaser.Tilemaps.TilemapLayer;
     private aisleGroundLayers!: Phaser.Tilemaps.TilemapLayer;
     private aisleWallLayers!: Phaser.Tilemaps.TilemapLayer;
+    private aisleFrontLayers!: Phaser.Tilemaps.TilemapLayer;
     
     private startRoom!: Phaser.Tilemaps.TilemapLayer;
     public startRoomWalls!: Phaser.Tilemaps.TilemapLayer;
@@ -22,6 +23,15 @@ export class DungeonGenerator {
     public aisleGroundVertical!: Phaser.Tilemaps.TilemapLayer;
 
     private roomAssets!: Phaser.Tilemaps.TilemapLayer;
+    private roomAssetsLayer1!: Phaser.Tilemaps.TilemapLayer;
+    private roomAssetsLayer2!: Phaser.Tilemaps.TilemapLayer;
+    private roomAssetsLayer3!: Phaser.Tilemaps.TilemapLayer;
+    private roomAssetsLayer4!: Phaser.Tilemaps.TilemapLayer;
+    private roomAssetsLayer5!: Phaser.Tilemaps.TilemapLayer;
+
+    // obstacles
+    private obstacles!: Phaser.Tilemaps.TilemapLayer;
+    private physicsObstacles!: Phaser.Tilemaps.TilemapLayer;
 
     public roomMaps!: number[][][];
 
@@ -60,7 +70,18 @@ export class DungeonGenerator {
         this.wallLayers = this.map.createBlankLayer('wallLayers', this.tileset, 0, 0, 150, 150)!;
         this.aisleGroundLayers = this.map.createBlankLayer('aisleGroundLayers', this.tileset, 0, 0, 150, 150)!;
         this.aisleWallLayers = this.map.createBlankLayer('aisleWallLayers', this.tileset, 0, 0, 150, 150)!;
+        this.aisleFrontLayers = this.map.createBlankLayer('aisleFrontLayers', this.tileset, 0, 0, 150, 150)!;
+
         this.roomAssets = this.map.createBlankLayer('roomAssets', this.tileset, 0, 0, 150, 150)!;
+        this.roomAssetsLayer1 = this.map.createBlankLayer('roomAssetsLayer1', this.tileset, 0, 0, 150, 150)!;
+        this.roomAssetsLayer2 = this.map.createBlankLayer('roomAssetsLayer2', this.tileset, 0, 0, 150, 150)!;
+        this.roomAssetsLayer3 = this.map.createBlankLayer('roomAssetsLayer3', this.tileset, 0, 0, 150, 150)!;
+        this.roomAssetsLayer4 = this.map.createBlankLayer('roomAssetsLayer4', this.tileset, 0, 0, 150, 150)!;
+        this.roomAssetsLayer5 = this.map.createBlankLayer('roomAssetsLayer5', this.tileset, 0, 0, 150, 150)!;
+
+        // obstacles
+        this.obstacles = this.map.createBlankLayer('obstacles', this.tileset, 0, 0, 150, 150)!;
+        this.physicsObstacles = this.map.createBlankLayer('physicsObstacles', this.tileset, 0, 0, 150, 150)!;
 
         // ground: 1 or 2
         // wall: 2
@@ -71,8 +92,18 @@ export class DungeonGenerator {
         this.wallLayers.setDepth(2);
         this.aisleGroundLayers.setDepth(2);
         this.aisleWallLayers.setDepth(2);
+        this.aisleFrontLayers.setDepth(3);
 
-        this.roomAssets.setDepth(3);
+        // asset layers
+        this.roomAssets.setDepth(9);
+        this.roomAssetsLayer1.setDepth(3);
+        this.roomAssetsLayer2.setDepth(11);
+        this.roomAssetsLayer3.setDepth(12);
+        this.roomAssetsLayer4.setDepth(13);
+        this.roomAssetsLayer5.setDepth(14);
+
+        this.obstacles.setDepth(2);
+        this.physicsObstacles.setDepth(3);
 
         // test
         // this.groundLayer = this.map.createLayer('battle-ground', this.tileset, 0, this.tileSize * 36)!;
@@ -99,9 +130,10 @@ export class DungeonGenerator {
         this.decideEndRoom();
         this.generateFinalRoomAssets();
         // console.log(this.endRoomX, this.endRoomY);
-
+        
         // decide how many battle rooms in this map
         this.decideRoomStructures();
+        this.generateRoomAssets();
 
         // initialize all points
         this.initPoints();
@@ -115,8 +147,108 @@ export class DungeonGenerator {
         this.drawTiles(this.roomAssets, 'end-room-layer2', false, (30 + 15) * this.endRoomY, (30 + 15 - 1) * this.endRoomX);
     }
     
-    // TODO: generate more room assets 3, 4, 5
     private generateRoomAssets(): void {
+        for (let i = 0; i < this.roomStructures.length; i++) {
+            for (let j = 0; j < this.roomStructures[0].length; j++) {
+                let roomID = this.roomStructures[i][j];
+                switch (roomID) {
+                    case 2:
+                        this.generateBattleRoomSturcture(i, j);
+                        break;
+
+                    case 3:
+                        this.generateRoom3(i, j);
+                        break;
+                    case 4:
+                        this.generateRoom4(i, j);
+                        break;
+                    case 5:
+                        this.generateRoom5(i, j);
+                        break;
+                
+                    default:
+                        break;
+                }
+            }
+            
+        }
+        const randomRoomId = this.getRandomInt(3, 5);
+        console.log('room: ', randomRoomId)
+
+    }
+
+    private generateBattleRoomSturcture(row: number, col: number) {
+        let randomObstacles = this.pickRandomStructures();
+        randomObstacles.forEach(obstacle => {
+            if (
+                obstacle === 'obstacles-1' ||
+                obstacle === 'obstacles-2' ||
+                obstacle === 'obstacles-3'
+            ) {
+                this.drawTiles(this.obstacles, obstacle, true, (30 + 15) * col, (30 + 15 - 1) * row);
+
+            } else {
+                this.drawTiles(this.physicsObstacles, obstacle, true, (30 + 15) * col, (30 + 15 - 1) * row);
+                this.drawTiles(this.obstacles, `${ obstacle }-bg`, true, (30 + 15) * col, (30 + 15 - 1) * row);
+            }
+        });
+    }
+
+    private pickRandomStructures(): string[] {
+        const structures = [
+            'obstacles-1', 'obstacles-2', 'obstacles-3', 
+            'physics-obstacles-1',
+            'physics-obstacles-2',
+            'physics-obstacles-3',
+            'physics-obstacles-4',
+            'physics-obstacles-5',
+            'physics-obstacles-6',
+            'physics-obstacles-7',
+        ];
+
+        let obstacleStructuresCount = this.getRandomInt(3, 8);
+
+        let shuffledStructures = this.shuffle(structures);
+
+        let randomObstacles = shuffledStructures.slice(0, obstacleStructuresCount);
+        return randomObstacles;
+    }
+
+    private shuffle(array: any[]) {
+        let currentIndex = array.length,  randomIndex;
+      
+        // While there remain elements to shuffle.
+        while (currentIndex > 0) {
+      
+          // Pick a remaining element.
+          randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex--;
+      
+          // And swap it with the current element.
+          [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+        }
+      
+        return array;
+    }
+
+    // TODO: generate NPC
+    private generateRoom3(row: number, col: number) {
+        this.drawTiles(this.roomAssetsLayer1, 'room-3-layer-1', true, (30 + 15) * col, (30 + 15 - 1) * row);
+        this.drawTiles(this.roomAssetsLayer2, 'room-3-layer-2', false, (30 + 15) * col, (30 + 15 - 1) * row);
+    }
+
+    private generateRoom4(row: number, col: number) {
+        this.drawTiles(this.roomAssetsLayer1, 'room-4-layer-1', true, (30 + 15) * col, (30 + 15 - 1) * row);
+        this.drawTiles(this.roomAssetsLayer2, 'room-4-layer-2', false, (30 + 15) * col, (30 + 15 - 1) * row);
+        
+    }
+
+    private generateRoom5(row: number, col: number) {
+        this.drawTiles(this.roomAssetsLayer1, 'room-5-layer-1', true, (30 + 15) * col, (30 + 15 - 1) * row);
+        this.drawTiles(this.roomAssetsLayer2, 'room-5-layer-2', false, (30 + 15) * col, (30 + 15 - 1) * row);
+        this.drawTiles(this.roomAssetsLayer3, 'room-5-layer-3', false, (30 + 15) * col, (30 + 15 - 1) * row);
+        this.drawTiles(this.roomAssetsLayer4, 'room-5-layer-4', false, (30 + 15) * col, (30 + 15 - 1) * row);
 
     }
     
@@ -153,7 +285,7 @@ export class DungeonGenerator {
     public getTileIDByName(name: string): number {
         if (name === 'nextLevel') return 357
         if (name === 'chests') return 595
-        if (name === 'endChest') return 595
+        if (name === 'endChest') return 629
         return -1
     }
 
@@ -314,6 +446,22 @@ export class DungeonGenerator {
         this.roomAssets.setCollisionByProperty({ collides: true });
         this.physics.add.collider(player, this.roomAssets);
 
+        // obstacle layer
+        this.physicsObstacles.setCollisionByProperty({ collides: true });
+        this.physics.add.collider(player, this.physicsObstacles);
+
+        // room assets layers
+        this.roomAssetsLayer1.setCollisionByProperty({ collides: true });
+        this.physics.add.collider(player, this.roomAssetsLayer1);
+        this.roomAssetsLayer2.setCollisionByProperty({ collides: true });
+        this.physics.add.collider(player, this.roomAssetsLayer2);
+        this.roomAssetsLayer3.setCollisionByProperty({ collides: true });
+        this.physics.add.collider(player, this.roomAssetsLayer3);
+        this.roomAssetsLayer4.setCollisionByProperty({ collides: true });
+        this.physics.add.collider(player, this.roomAssetsLayer4);
+        this.roomAssetsLayer5.setCollisionByProperty({ collides: true });
+        this.physics.add.collider(player, this.roomAssetsLayer5);
+
         // this.showDebugWalls();
     }
 
@@ -368,6 +516,7 @@ export class DungeonGenerator {
                     if (openings[1] === 1) {
                         this.drawTiles(this.aisleGroundLayers, 'aisle-ground-vertical', false, xOffset + 15 * col, yOffset + 14 * row - 22);
                         this.drawTiles(this.aisleWallLayers, 'aisle-walls-vertical', true, xOffset + 15 * col, yOffset + 14 * row - 22);
+                        this.drawTiles(this.aisleFrontLayers, 'aisle-walls-vertical-front', true, xOffset + 15 * col, yOffset + 14 * row - 22);
                     }
                     
                     // draw horizontal aisles
