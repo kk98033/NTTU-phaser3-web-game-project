@@ -132,6 +132,13 @@ export class Battle {
         });
     }
 
+    private resetLayer(layer: Phaser.Tilemaps.TilemapLayer) {
+        this.scene.tweens.killTweensOf(layer);
+        if (layer) {
+            layer.setAlpha(1);
+        }
+    }
+
     public lockRoom(row: number, col: number) {
         if (this.roomStatus[row][col] === 1) {
             // if explored, don't lock the room again
@@ -140,6 +147,9 @@ export class Battle {
 
         this.scene.time.delayedCall(500, () => {
             // draw walls to block entrance
+            this.resetLayer(this.closedDoorsWallLayer);
+            this.resetLayer(this.closedDoorsGroundLayer);
+            
             this.drawTiles(this.closedDoorsGroundLayer, 'closed-doors-ground', false, col * (30 + 15), row * (30 + 15 - 1));
             this.drawTiles(this.closedDoorsWallLayer, 'closed-doors-walls', true, col * (30 + 15), row * (30 + 15 - 1));
 

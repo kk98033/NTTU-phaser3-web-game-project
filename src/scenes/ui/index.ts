@@ -48,7 +48,7 @@ export class UIScene extends Scene {
             this.input.on('pointerdown', () => {
                 this.game.events.off(EVENTS_NAME.chestLoot, this.chestLootHandler);
                 this.game.events.off(EVENTS_NAME.gameEnd, this.gameEndHandler);
-                this.scene.get('level-1-scene').scene.restart();
+                this.scene.get('dungeon-scene').scene.restart();
                 this.scene.restart();
             });
 
@@ -80,25 +80,48 @@ export class UIScene extends Scene {
             this.input.on('pointerdown', () => {
                 this.game.events.off(EVENTS_NAME.chestLoot, this.chestLootHandler);
                 this.game.events.off(EVENTS_NAME.goNextLevel, this.gameEndHandler);
-                this.scene.get('dungeon-scene').scene.restart();
-                this.scene.restart();
+                const player = this.game.registry.get('player');
+                // this.game.registry.set('restartData', {
+                //     score: this.score.getValue(),
+                //     health: player.hp
+                // });    
+                this.stopAllScenes();           
+                this.scene.start('dungeon-scene', { score: this.score.getValue(), health: player.hp });
+                this.scene.start('ui-scene', { score: this.score.getValue(), health: player.hp });
+                // this.scene.get('dungeon-scene').scene.restart();
+                // this.scene.restart();
             });
         };
 
         // win ui
         this.chestLootHandler = () => {
             this.score.changeValue(ScoreOperations.INCREASE, 10);
-            if (this.score.getValue() === gameConfig.winScore) {
-                this.game.events.emit(EVENTS_NAME.gameEnd, 'win');
-            }
+            // if (this.score.getValue() === gameConfig.winScore) {
+            //     this.game.events.emit(EVENTS_NAME.gameEnd, 'win');
+            // }
         };
     }
 
-    create(): void {
-        this.score = new Score(this, 20, 20, 0);
+    create(data: any): void {
+        if (data) {
+            this.score = new Score(this, 20, 20, data.score);
+
+        } else {
+            this.score = new Score(this, 20, 20, 0);
+        }
         this.initListeners();
 
         this.scene.moveAbove('dungeon-scene');
+    }
+
+    private stopAllScenes() {
+        const scenes = this.scene.manager.scenes;
+    
+        for (let scene of scenes) {
+            if (scene.scene.isActive()) {
+                scene.scene.stop();
+            }
+        }
     }
 
     private initListeners(): void {

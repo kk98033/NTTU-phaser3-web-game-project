@@ -32,9 +32,11 @@ export class Player extends Actor {
     // 3 => down
     private currentDirection = 3; 
 
-    constructor(scene: Phaser.Scene, x: number, y: number) {
+    constructor(scene: Phaser.Scene, x: number, y: number, initHp = 100) {
         // super(scene, x, y, 'king');
         super(scene, x, y, 'girl');
+        this.hp = initHp;
+        
         // KEYS
         // @ts-ignore
         this.keyW = this.scene.input.keyboard.addKey('W');

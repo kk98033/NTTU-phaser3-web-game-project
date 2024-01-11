@@ -31,9 +31,17 @@ export class Dungeon extends Scene {
         super('dungeon-scene');
     }
     
-    create(): void {
-        this.player = new Player(this, 16 * 16, 16 * 20);
+    create(data: any): void {
+        if (data) {
+            this.player = new Player(this, 16 * 16, 16 * 20, data.health);
+            
+        } else {
+            this.player = new Player(this, 16 * 16, 16 * 20);
+        }
+        this.game.registry.set('player', this.player);
         this.player.setDepth(10);
+
+        console.log(data)
 
         // for battle rooms
         this.battleEvent = new Battle(this, this.physics, this.player);
