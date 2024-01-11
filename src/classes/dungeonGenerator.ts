@@ -165,7 +165,8 @@ export class DungeonGenerator {
         this.getRoomStructures();
         
         const length = 3;
-        const numBattleRooms = this.getRandomInt(2, this.currentRooms - 1);
+        // console.log(this.currentRooms, Math.floor(this.currentRooms / 3))
+        const numBattleRooms = this.getRandomInt(Math.floor(this.currentRooms / 3) + 1, this.currentRooms - 1);
 
         let availableRooms = [];
         for (let i = 0; i < length; i++) {

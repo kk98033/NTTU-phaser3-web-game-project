@@ -127,7 +127,7 @@ export class Battle {
             yoyo: true,
             repeat: 10,
             onComplete: () => {
-                layer.setAlpha(0); 
+                // layer.setAlpha(0); 
             }
         });
     }

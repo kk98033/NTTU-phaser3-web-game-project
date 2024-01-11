@@ -22,6 +22,15 @@ export class Player extends Actor {
     private minimapPlayer: Phaser.GameObjects.Graphics;
 
     private speed = 210;
+    private diagonalSpeed = this.speed * 0.707;
+
+    private isDead = false;
+
+    // 0 => left
+    // 1 => up
+    // 2 => right
+    // 3 => down
+    private currentDirection = 3; 
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
         // super(scene, x, y, 'king');
@@ -40,20 +49,37 @@ export class Player extends Actor {
         this.isAnimating = false;
 
         // @ts-ignore
+        // attack animtaion
         this.keySpace = this.scene.input.keyboard.addKey(32);
         this.keySpace.on('down', (event: KeyboardEvent) => {
-            // TODO: have some bugs
-            if (!this.isAnimating || true) {
-                this.anims.play('girl-attack', true);
-                this.scene.game.events.emit(EVENTS_NAME.attack);
-                this.isMoving = true;
-                this.isAnimating = true; // playing animation
-            }
+            this.anims.play('girl-attack', true);
+            this.scene.game.events.emit(EVENTS_NAME.attack);
+            this.isAnimating = true;
         });
+        // this.keySpace.on('down', (event: KeyboardEvent) => {
+            
+            // this.stopAnimation('girl-attack')
+            // this.anims.play('girl-attack', true);
+            // this.scene.game.events.emit(EVENTS_NAME.attack);
+
+            // this.isMoving = true;
+            // if (!this.isAnimating || true) {
+            //     this.isAnimating = true; // playing animation
+            // }
+        // });
+
         // @ts-ignore
-        this.on('animationcomplete', (animation, frame) => {
-            if (animation.key === 'girl-attack' || animation.key === 'girl-idle') {
-                this.isAnimating = false; 
+        // this.on('animationcomplete', (animation, frame) => {
+        //     if (animation.key === 'girl-attack' || animation.key === 'girl-idle') {
+        //         this.isAnimating = false; 
+        //     }
+        // }, this);
+
+        // listen on death animation
+        this.on('animationcomplete', (animation: Phaser.Animations.Animation, frame: Phaser.Animations.AnimationFrame) => {
+            if (animation.key === 'girl-die') {
+                console.log('dead')
+                this.scene.game.events.emit(EVENTS_NAME.gameEnd, GameStatus.LOSE);
             }
         }, this);
 
@@ -87,47 +113,116 @@ export class Player extends Actor {
 
         this.drawMinimapPlayer();
         
-        if (this.keyW?.isDown || this.keyA?.isDown || this.keyS?.isDown || this.keyD?.isDown) {
-            if (this.anims.currentAnim && this.anims.currentAnim.key === 'girl-idle') {
-                this.anims.stop();
-            }
-        }
+        if (this.isDead) return;
         
         if (this.keyW?.isDown) {
-            this.getBody().velocity.y = -this.speed;
-            !this.anims.isPlaying && this.anims.play('walk', true);
+            const velocity = this.keyA?.isDown || this.keyD?.isDown ? this.diagonalSpeed : this.speed;
+            this.getBody().velocity.y = -velocity;
+
+            if (this.keyA.isDown || this.keyD.isDown) {
+                this.stopAnimation('walk')
+                !this.anims.isPlaying && this.anims.play('walk', true);
+
+            } else {
+                this.stopAnimation('walk-up')
+                !this.anims.isPlaying && this.anims.play('walk-up', true);
+            }
             this.isMoving = true;
+            this.currentDirection = 1;
         }
         
         if (this.keyA?.isDown) {
+            const velocity = this.keyW?.isDown || this.keyS?.isDown ? this.diagonalSpeed : this.speed;
             this.getBody().velocity.x = -this.speed;
+
             this.checkFlip();
             // this.getBody().setOffset(48, 15);
             this.getBody().setOffset(this.playerWidth, 0);
+
+            this.stopAnimation('walk');
             !this.anims.isPlaying && this.anims.play('walk', true);
+
             this.isMoving = true;
+            this.currentDirection = 0;
         }
+
         if (this.keyS?.isDown) {
-            this.getBody().velocity.y = this.speed;
+            const velocity = this.keyA?.isDown || this.keyD?.isDown ? this.diagonalSpeed : this.speed;
+            this.getBody().velocity.y = velocity;
+            
+            this.stopAnimation('walk');
             !this.anims.isPlaying && this.anims.play('walk', true);
+
             this.isMoving = true;
+            this.currentDirection = 3;
         }
+
         if (this.keyD?.isDown) {
-            this.getBody().velocity.x = this.speed;
+            const velocity = this.keyW?.isDown || this.keyS?.isDown ? this.diagonalSpeed : this.speed;
+            this.getBody().velocity.x = velocity;
+
             this.checkFlip();
             // this.getBody().setOffset(15, 15);
             this.getBody().setOffset(0, 0);
+            
+            this.stopAnimation('walk');
             !this.anims.isPlaying && this.anims.play('walk', true);
+
             this.isMoving = true;
+            this.currentDirection = 2;
         }
-        
-        if (!this.isMoving) {
-            this.anims.play('girl-idle', true);
+
+        if (!this.isMoving && !this.isAnimating) {
+            this.playIdleAnimation();
         }
 
         this.hpValue.setPosition(this.x, this.y - this.height * 0.4);
         this.hpValue.setOrigin(0.8, 0.5);
         this.hpValue.setDepth(10);
+    }
+
+    private playIdleAnimation() {
+        if (this.isAnimating) {
+            return; 
+        }
+    
+        // playing idle animation
+        switch (this.currentDirection) {
+            case 0:
+                // left
+                this.stopAnimation('girl-idle-right');
+                this.anims.play('girl-idle-right', true);
+
+                break;
+                
+            case 1:
+                // up
+                if (!(this.keyD?.isDown && this.keyA?.isDown)) {
+                    this.stopAnimation('girl-idle-up');
+                    this.anims.play('girl-idle-up', true);
+                }
+                break;
+
+            case 2:
+                // right
+                this.stopAnimation('girl-idle-right');
+                this.anims.play('girl-idle-right', true);
+                break;
+                
+            default:
+                // down
+                this.stopAnimation('girl-idle');
+                this.anims.play('girl-idle', true);
+                break;
+        }
+    }
+
+    private stopAnimation(newAnimation: string) {
+        if (this.anims.currentAnim) {
+            if (this.anims.currentAnim.key != newAnimation && this.anims.currentAnim.key != 'girl-attack') {
+                this.anims.stop();
+            }
+        }
     }
 
     private drawCollisionBox(): void {
@@ -147,10 +242,19 @@ export class Player extends Actor {
     }
 
     public getDamage(value?: number): void {
-        super.getDamage(value);
-        this.hpValue.setText(this.hp.toString());
-        if (this.hp <= 0) {
-            this.scene.game.events.emit(EVENTS_NAME.gameEnd, GameStatus.LOSE);
+        if (!this.isDead) {
+            super.getDamage(value);
+            this.hpValue.setText(this.hp.toString());
+            // if (this.hp <= 0) {
+            //     this.scene.game.events.emit(EVENTS_NAME.gameEnd, GameStatus.LOSE);
+            // }
+            if (this.hp <= 0) {
+                // play death animation
+                console.log('girl die')
+                this.stopAnimation('girl-die');
+                this.anims.play('girl-die', true);
+                this.isDead = true;
+            }
         }
     }
 
@@ -192,6 +296,17 @@ export class Player extends Actor {
         });
 
         this.scene.anims.create({
+            key: 'walk-up',
+            frames: this.scene.anims.generateFrameNames('a-girl', {
+                prefix: 'girl',
+                start: 35,
+                end: 40,
+            }),
+            frameRate: 6,
+        });
+
+        // idle animation frame
+        this.scene.anims.create({
             key: 'girl-idle',
             frames: this.scene.anims.generateFrameNames('a-girl', {
                 prefix: 'girl',
@@ -202,6 +317,48 @@ export class Player extends Actor {
         });
 
         this.scene.anims.create({
+            key: 'girl-idle-up',
+            frames: this.scene.anims.generateFrameNames('a-girl', {
+                prefix: 'girl',
+                start: 13,
+                end: 16,
+            }),
+            frameRate: 6,
+        });
+
+        this.scene.anims.create({
+            key: 'girl-idle-left',
+            frames: this.scene.anims.generateFrameNames('a-girl', {
+                prefix: 'girl',
+                start: 5,
+                end: 8,
+            }),
+            frameRate: 6,
+        });
+
+        this.scene.anims.create({
+            key: 'girl-idle-right',
+            frames: this.scene.anims.generateFrameNames('a-girl', {
+                prefix: 'girl',
+                start: 9,
+                end: 12,
+            }),
+            frameRate: 6,
+        });
+
+        // die
+        this.scene.anims.create({
+            key: 'girl-die',
+            frames: this.scene.anims.generateFrameNames('a-girl', {
+                prefix: 'girl',
+                start: 41,
+                end: 44,
+            }),
+            frameRate: 6,
+        });
+
+        // girl attack
+        this.scene.anims.create({
             key: 'girl-attack',
             frames: this.scene.anims.generateFrameNames('a-girl', {
                 prefix: 'girl-attack',
@@ -209,7 +366,15 @@ export class Player extends Actor {
                 end: 2,
             }),
             frameRate: 6,
+            repeat: 0
         });
+
+        this.on('animationcomplete', (animation: Phaser.Animations.Animation, frame: Phaser.Animations.AnimationFrame) => {
+            if (animation.key === 'girl-attack') {
+                this.isAnimating = false;
+                this.playIdleAnimation(); // play idle animate after attack animation complete
+            }
+        }, this);
 
         // king
         this.scene.anims.create({
