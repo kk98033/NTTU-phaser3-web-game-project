@@ -14,6 +14,7 @@ export class Player extends Actor {
 
     private isMoving;
     private isAnimating;
+    private isAttacking;
     
     private playerWidth;
     private playerHeight;
@@ -33,6 +34,8 @@ export class Player extends Actor {
     // 2 => right
     // 3 => down
     private currentDirection = 3; 
+
+    private attackingCD = 500;
 
     constructor(scene: Phaser.Scene, x: number, y: number, initHP = null) {
         // super(scene, x, y, 'king');
@@ -54,15 +57,18 @@ export class Player extends Actor {
 
         this.isMoving = false
         this.isAnimating = false;
+        this.isAttacking = false;
+
 
         // @ts-ignore
         // attack animtaion
         this.keySpace = this.scene.input.keyboard.addKey(32);
         this.keySpace.on('down', (event: KeyboardEvent) => {
-            if (this.isDead) return;
+            if (this.isDead || this.isAttacking) return;
             this.anims.play('girl-attack', true);
             this.scene.game.events.emit(EVENTS_NAME.attack);
             this.isAnimating = true;
+            this.isAttacking = true;
         });
         // this.keySpace.on('down', (event: KeyboardEvent) => {
             
@@ -87,6 +93,11 @@ export class Player extends Actor {
         this.on('animationcomplete', (animation: Phaser.Animations.Animation, frame: Phaser.Animations.AnimationFrame) => {
             if (animation.key === 'girl-die') {
                 this.scene.game.events.emit(EVENTS_NAME.gameEnd, GameStatus.LOSE);
+            } else if (animation.key === 'girl-attack') {
+                this.scene.time.delayedCall(this.attackingCD, () => {
+                    console.log('attack end')
+                    this.isAttacking = false;
+                });
             }
         }, this);
 

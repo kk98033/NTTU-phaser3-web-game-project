@@ -300,15 +300,15 @@ export class Battle {
     }
 
     private unlockRoom() {
-        this.wallColliders.forEach(collider => collider.destroy());
-        this.wallColliders = [];
-
+        
         // add flash effect
-        // this.flashLayer(this.closedDoorsWallLayer);
-        // this.flashLayer(this.closedDoorsGroundLayer);
-
+        this.flashLayer(this.closedDoorsWallLayer);
+        this.flashLayer(this.closedDoorsGroundLayer);
+        
         // claer walls
         this.scene.time.delayedCall(2500, () => {
+            this.wallColliders.forEach(collider => collider.destroy());
+            this.wallColliders = [];
             this.clearTiles(this.closedDoorsWallLayer);
             this.clearTiles(this.closedDoorsGroundLayer);
         });
