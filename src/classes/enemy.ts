@@ -5,8 +5,10 @@ import { EVENTS_NAME } from '../consts';
 
 export class Enemy extends Actor {
     private target: Player;
-    private AGRESSOR_RADIUS = 10 * 16;
+    private AGRESSOR_RADIUS = 30 * 16;
     private moveSpeed = 50;
+
+    private playerAttackRange = 1;
 
     private attackHandler: () => void;
 
@@ -28,11 +30,12 @@ export class Enemy extends Actor {
         this.getBody().setOffset(0, 0);
 
         this.attackHandler = () => {
+            // get attacked
             if (
                 Phaser.Math.Distance.BetweenPoints(
                     { x: this.x, y: this.y },
                     { x: this.target.x, y: this.target.y },
-                ) < this.target.width
+                ) < this.target.width + 16 * this.playerAttackRange
             ) {
                 this.getDamage();
                 this.disableBody(true, false);

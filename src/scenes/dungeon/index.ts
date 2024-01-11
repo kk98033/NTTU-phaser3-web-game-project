@@ -30,8 +30,15 @@ export class Dungeon extends Scene {
     constructor() {
         super('dungeon-scene');
     }
+
+    preload() {
+        // load background music
+        // this.load.audio('backgroundMusic', 'path/to/backgroundMusic.mp3');
+    }
     
     create(data: any): void {
+        this.game.events.on(EVENTS_NAME.getHealth, this.posionHandler, this);
+        // get data from previous level
         if (data) {
             this.player = new Player(this, 16 * 16, 16 * 20, data.health);
             
@@ -64,6 +71,14 @@ export class Dungeon extends Scene {
         // this.initEnemies();
 
         this.initPoints();
+
+        this.cameras.main.fadeIn(1000, 0, 0, 0);
+        // this.minimap.uiCamera.fadeIn(1000, 0, 0, 0);
+        
+        // TODO: background music
+        // player background music
+        // let bgMusic = this.sound.add('backgroundMusic', { loop: true });
+        // bgMusic.play();
     }
 
     update(): void {
@@ -76,6 +91,11 @@ export class Dungeon extends Scene {
         }
         
     }
+
+    public posionHandler() {
+        this.player.gainHP(10);
+        console.log(this.player.getHPValue());
+    };
 
     private initPoints(): void {
         this.dungeonGenerator.getPoints().forEach(point => {

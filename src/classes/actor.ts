@@ -7,6 +7,7 @@ export class Actor extends Physics.Arcade.Sprite {
         scene.physics.add.existing(this);
         this.getBody().setCollideWorldBounds(true);
     }
+
     public getDamage(value?: number): void {
         this.scene.tweens.add({
             targets: this,
@@ -19,14 +20,17 @@ export class Actor extends Physics.Arcade.Sprite {
                     this.hp = this.hp - value;
                 }
             },
+
             onComplete: () => {
                 this.setAlpha(1);
             },
         });
     }
+
     public getHPValue(): number {
         return this.hp;
     }
+
     protected checkFlip(): void {
         if (this.getBody().velocity.x < 0) {
             this.scaleX = -1;

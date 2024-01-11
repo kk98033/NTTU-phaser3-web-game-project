@@ -25,6 +25,8 @@ export class Player extends Actor {
     private diagonalSpeed = this.speed * 0.707;
 
     private isDead = false;
+    
+    private maxHp = 100;
 
     // 0 => left
     // 1 => up
@@ -32,10 +34,13 @@ export class Player extends Actor {
     // 3 => down
     private currentDirection = 3; 
 
-    constructor(scene: Phaser.Scene, x: number, y: number, initHp = 100) {
+    constructor(scene: Phaser.Scene, x: number, y: number, initHP = null) {
         // super(scene, x, y, 'king');
         super(scene, x, y, 'girl');
-        this.hp = initHp;
+        if (initHP)
+            this.hp = initHP;
+        else
+            this.hp = this.maxHp;
         
         // KEYS
         // @ts-ignore
@@ -54,6 +59,7 @@ export class Player extends Actor {
         // attack animtaion
         this.keySpace = this.scene.input.keyboard.addKey(32);
         this.keySpace.on('down', (event: KeyboardEvent) => {
+            if (this.isDead) return;
             this.anims.play('girl-attack', true);
             this.scene.game.events.emit(EVENTS_NAME.attack);
             this.isAnimating = true;
@@ -80,7 +86,6 @@ export class Player extends Actor {
         // listen on death animation
         this.on('animationcomplete', (animation: Phaser.Animations.Animation, frame: Phaser.Animations.AnimationFrame) => {
             if (animation.key === 'girl-die') {
-                console.log('dead')
                 this.scene.game.events.emit(EVENTS_NAME.gameEnd, GameStatus.LOSE);
             }
         }, this);
@@ -108,6 +113,8 @@ export class Player extends Actor {
     }
 
     update(): void {
+        if (this.isDead) return;
+
         this.getBody().setVelocity(0);
         this.isMoving = false;
 
@@ -252,12 +259,17 @@ export class Player extends Actor {
             // }
             if (this.hp <= 0) {
                 // play death animation
-                console.log('girl die')
                 this.stopAnimation('girl-die');
                 this.anims.play('girl-die', true);
                 this.isDead = true;
             }
         }
+    }
+
+    public gainHP(amount: number) {
+        this.hp += amount;
+        if (this.hp > this.maxHp) this.hp = this.maxHp;
+        this.hpValue.setText(this.hp.toString());
     }
 
     public getPlayerPosition(playerX: number, playerY: number): [boolean, number, number] {

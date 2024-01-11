@@ -74,7 +74,9 @@ export class Battle {
     
         this.physics.add.overlap(this.player, potion, (player, collidedPotion) => {
             console.log("get health potion!");
-            collidedPotion.destroy();
+            this.scene.game.events.emit(EVENTS_NAME.getHealth);
+            // collidedPotion.destroy();
+            this.collectItem(this.player, potion);
         });
     }
 
@@ -84,10 +86,37 @@ export class Battle {
             .setDepth(9);
     
         this.physics.add.overlap(this.player, coin, (player, collidedCoin) => {
-            console.log("get coin!");
-            collidedCoin.destroy();
+            this.scene.game.events.emit(EVENTS_NAME.chestLoot);
+            // collidedCoin.destroy();
+            this.collectItem(this.player, coin);
         });
     }
+
+    private collectItem(player: Phaser.Physics.Arcade.Sprite, item: Phaser.Physics.Arcade.Sprite) {
+        // Emit an event for the chest loot
+        // this.scene.game.events.emit(EVENTS_NAME.chestLoot);
+        
+
+        // Disable item's physics body immediately to prevent further overlap checks
+        item.disableBody(true, false);
+
+        // Define the distance for the item to move up
+        const moveUpDistance = 50; // Change this value to whatever suits your game
+
+        // Create a tween for the item to move up and fade out
+        this.scene.add.tween({
+            targets: item,
+            y: item.y - moveUpDistance, // Move up by the specified distance
+            alpha: 0, // Fade out to alpha 0
+            duration: 800, // Duration of the tween, in milliseconds
+            ease: 'Power1', // Easing function to make the effect smooth
+            onComplete: () => {
+                // Destroy the item once the tween is complete
+                item.destroy();
+            }
+        });
+    }
+
 
     private spawnChest(row: number, col: number) {
         console.log('spawn chest')
@@ -115,7 +144,7 @@ export class Battle {
                 targets: chest,
                 y: targetY,
                 duration: 1000, 
-                ease: 'Power2', // 动画缓动类型，可根据需要调整
+                ease: 'Power2', 
                 onComplete: () => {
                     // shake camera after chest dropped down
                     this.scene.cameras.main.shake(200, 0.01);
@@ -212,7 +241,7 @@ export class Battle {
                     ease: 'Power2', // Easing function
                     onStart: () => {
                         // Create particle effect when the animation starts
-                        this.createParticleEffect(x, y);
+                        // this.createParticleEffect(x, y);
                     }
                 });
     
@@ -233,10 +262,37 @@ export class Battle {
     }
     
     
-    private createParticleEffect(x: number, y: number) {
-        // Create particle effect logic here
-        // Example: this.add.particles('particleKey').createEmitter({ ... });
-    }
+    // private createParticleEffect(x: number, y: number) {
+    //     // Create a particle manager using a specified particle image key
+    //     let particles = this.scene.add.particles('particleKey'); // 确保 'particleKey' 是你在 preload 阶段加载的粒子图像的键
+    
+    //     // Create an emitter with specific properties for the particle effect
+    //     let emitter = particles.createEmitter({
+    //         speed: 100, // Particles will be emitted at a speed of 100
+    //         angle: 0, // Particles will be emitted at an angle of 0 degrees
+    //         scale: { start: 1, end: 0 }, // Particles will scale down from full size to zero
+    //         blendMode: 'ADD', // Use 'ADD' blend mode for a brighter effect
+    //         lifespan: 1000, // Each particle will live for 1000 milliseconds
+    //         frequency: 100, // Particles will be emitted every 100 milliseconds
+    //         emitZone: { 
+    //             type: 'random', 
+    //             source: new Phaser.Geom.Circle(0, 0, 20) // Particles will emit from a random position within this circle
+    //         },
+    //         deathZone: { 
+    //             type: 'onEnter', 
+    //             source: new Phaser.Geom.Circle(x, y, 50) // Particles will be destroyed when they enter this circle
+    //         }
+    //     });
+    
+    //     // Set the position of the emitter to the specified x and y coordinates
+    //     emitter.setPosition(x, y); // 将发射器的位置设置为指定的 x 和 y 坐标
+    
+    //     // Optional: Automatically destroy the particles after a certain time
+    //     this.scene.time.delayedCall(5000, () => {
+    //         particles.destroy(); // 在 5000 毫秒后自动销毁粒子系统
+    //     });
+    // }
+    
 
     private getRandomPoints(points: any[], n: number): any[] {
         const shuffled = points.sort(() => 0.5 - Math.random());
@@ -248,8 +304,8 @@ export class Battle {
         this.wallColliders = [];
 
         // add flash effect
-        this.flashLayer(this.closedDoorsWallLayer);
-        this.flashLayer(this.closedDoorsGroundLayer);
+        // this.flashLayer(this.closedDoorsWallLayer);
+        // this.flashLayer(this.closedDoorsGroundLayer);
 
         // claer walls
         this.scene.time.delayedCall(2500, () => {

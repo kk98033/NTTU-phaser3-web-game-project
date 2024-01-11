@@ -8,7 +8,7 @@ export class Minimap {
     mapWidth: number;
     mapHeight: number;
     
-    private uiCamera: Cameras.Scene2D.Camera;
+    public uiCamera: Cameras.Scene2D.Camera;
 
     constructor(scene: Phaser.Scene, roomMaps: number[][][], tileSize: number) {
         this.scene = scene;
