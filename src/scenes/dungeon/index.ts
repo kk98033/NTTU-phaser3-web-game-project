@@ -46,6 +46,7 @@ export class Dungeon extends Scene {
 
             // player background music ＯＮＣＥ
             let bgMusic = this.sound.add('backgroundMusic', { loop: true });
+            bgMusic.setVolume(0.2); 
             bgMusic.play();
         }
         this.game.registry.set('player', this.player);
@@ -102,6 +103,15 @@ export class Dungeon extends Scene {
                     // next dungeon entrance
                     this.sound.play('successSound');
                     this.game.events.emit(EVENTS_NAME.goNextLevel);
+                    collidedSprite.destroy();
+                }
+                else if (point.id === 661) {
+                    // fakeChest
+                    this.sound.play('punchSound');
+                    // this.game.events.emit(EVENTS_NAME.goNextLevel);
+                    this.player.getDamage(20);
+                    this.player.updateHPBar();
+                    this.cameras.main.flash();
                     collidedSprite.destroy();
 
                 } else {

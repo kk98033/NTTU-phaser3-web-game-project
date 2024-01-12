@@ -7,7 +7,8 @@ export class LoadingScene extends Scene {
 
     create(): void {
         // console.log('Loading scene was created');
-        this.scene.start('dungeon-scene');
+        this.scene.start('menu-scene');
+        // this.scene.start('dungeon-scene');
         // this.scene.launch('level-1-scene');
         this.scene.launch('ui-scene');
 
@@ -31,14 +32,22 @@ export class LoadingScene extends Scene {
             key: 'backgroundImage',
             url: 'images/background.png',
         });
+        
+        this.load.image({
+            key: 'backgroundImage2',
+            url: 'images/background-2.png',
+        });
 
         this.load.image({
             key: 'settingsIcon',
             url: 'images/settingsIcon.png',
         });
+        
 
         // load background music
         this.load.audio('backgroundMusic', 'mp3/background-music.mp3');
+        this.load.audio('menuMusic', 'mp3/menu-music.mp3');
+
         // sound effects
         this.load.audio('attackSound', 'mp3/attack.mp3');
         this.load.audio('collectSound', 'mp3/collect.mp3');
@@ -48,6 +57,9 @@ export class LoadingScene extends Scene {
         this.load.audio('completeSound', 'mp3/complete.mp3');
         this.load.audio('collectChestSound', 'mp3/collect-chest.mp3');
         this.load.audio('successSound', 'mp3/success.mp3');
+
+        // font
+        // this.load.bitmapFont('pixelFont', 'ttf/Mario-Kart-DS.ttf');
 
         this.load.tilemapTiledJSON('dungeon', 'tilemaps/json/dungeon.json');
         

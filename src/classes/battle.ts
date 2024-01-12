@@ -79,9 +79,6 @@ export class Battle {
 
             this.scene.game.events.emit(EVENTS_NAME.getHealth);
             this.collectItem(this.player, potion);
-
-            //TODO: add sound effect
-            // TODO: add chest room
         });
     }
 

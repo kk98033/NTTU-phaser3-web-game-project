@@ -311,11 +311,10 @@ export class Player extends Actor {
 
     public getDamage(value?: number): void {
         if (!this.isDead) {
-            super.getDamage(value);
+            // super.getDamage(value);
+            if (value)
+                this.hp -= value;
             this.hpValue.setText(this.hp.toString());
-            // if (this.hp <= 0) {
-            //     this.scene.game.events.emit(EVENTS_NAME.gameEnd, GameStatus.LOSE);
-            // }
             if (this.hp <= 0) {
                 // play death animation
                 this.stopAnimation('girl-die');
@@ -324,6 +323,12 @@ export class Player extends Actor {
                 this.isDead = true;
             }
         }
+        this.updateHPBar();
+    }
+
+    public updateHPBar() {
+        this.hpValue.setText(this.hp.toString());
+
     }
 
     public gainHP(amount: number) {

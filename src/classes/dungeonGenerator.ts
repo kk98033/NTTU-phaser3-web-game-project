@@ -230,15 +230,17 @@ export class DungeonGenerator {
         return array;
     }
 
-    // TODO: generate NPC
     private generateRoom3(row: number, col: number) {
         this.drawTiles(this.roomAssetsLayer1, 'room-3-layer-1', true, (30 + 15) * col, (30 + 15 - 1) * row);
         this.drawTiles(this.roomAssetsLayer2, 'room-3-layer-2', false, (30 + 15) * col, (30 + 15 - 1) * row);
+        this.initRoom3Points(row, col);
     }
 
     private generateRoom4(row: number, col: number) {
         this.drawTiles(this.roomAssetsLayer1, 'room-4-layer-1', true, (30 + 15) * col, (30 + 15 - 1) * row);
         this.drawTiles(this.roomAssetsLayer2, 'room-4-layer-2', false, (30 + 15) * col, (30 + 15 - 1) * row);
+
+        this.initRoom4Points(row, col);
         
     }
 
@@ -247,11 +249,65 @@ export class DungeonGenerator {
         this.drawTiles(this.roomAssetsLayer2, 'room-5-layer-2', false, (30 + 15) * col, (30 + 15 - 1) * row);
         this.drawTiles(this.roomAssetsLayer3, 'room-5-layer-3', false, (30 + 15) * col, (30 + 15 - 1) * row);
         this.drawTiles(this.roomAssetsLayer4, 'room-5-layer-4', false, (30 + 15) * col, (30 + 15 - 1) * row);
-
+        this.initRoom5Points(row, col);
     }
     
     private initPoints(): void {
         this.initFinalRoomPoints();
+    }
+
+    private initRoom3Points(row: number, col: number): void {
+        let randomChest = this.getRandomInt(0, 1);
+        let chestTypes = ['lootChest', 'fakeChest']
+        const objects = this.map.filterObjects('ChestsPoint', obj => obj.name === chestTypes[randomChest]) || [];
+        const NextLevelPoints = gameObjectsToObjectPoints(objects);
+        NextLevelPoints.forEach(point => {
+            let data = { 
+                x: Math.floor(point.x) + (col) * (30 + 15) * 16, 
+                y: Math.floor(point.y) + (row) * (30 + 15 - 1) * 16, 
+                id: this.getTileIDByName(point.name) 
+            }
+            this.points.push(data);
+        });
+    }
+
+    private initRoom4Points(row: number, col: number): void {
+        const objects = this.map.filterObjects('LootChestPoints', obj => obj.name ==='lootChestPoint') || [];
+        this.shuffle(objects);
+        const NextLevelPoints = gameObjectsToObjectPoints(objects.slice(1, this.getRandomInt(2, 7)));
+        NextLevelPoints.forEach(point => {
+            let data = { 
+                x: Math.floor(point.x) + (col) * (30 + 15) * 16, 
+                y: Math.floor(point.y) + (row) * (30 + 15 - 1) * 16, 
+                id: this.getTileIDByName(point.name) 
+            }
+            this.points.push(data);
+        });
+    }
+
+    private initRoom5Points(row: number, col: number): void {
+        const objects = this.map.filterObjects('NPCPoints', obj => obj.name ==='NPCPoint') || [];
+        const NextLevelPoints = gameObjectsToObjectPoints(objects);
+        NextLevelPoints.forEach(point => {
+            let data = { 
+                x: Math.floor(point.x) + (col) * (30 + 15) * 16, 
+                y: Math.floor(point.y) + (row) * (30 + 15 - 1) * 16, 
+                id: this.getRandomNPC() 
+            }
+            this.points.push(data);
+        });
+    }
+
+    private getRandomNPC() {
+        let npcs = ['629', '904', '466'];
+        return npcs[this.getRandomInt(1,npcs.length)];
+    }
+
+    private shuffleArray(array: any[]) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
     }
 
     private initFinalRoomPoints(): void {
@@ -284,6 +340,8 @@ export class DungeonGenerator {
         if (name === 'nextLevel') return 357
         if (name === 'chests') return 595
         if (name === 'endChest') return 629
+        if (name === 'lootChest' || name === 'lootChestPoint') return 628
+        if (name === 'fakeChest') return 661
         return -1
     }
 

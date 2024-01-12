@@ -48,8 +48,10 @@ export class UIScene extends Scene {
                 this.sound.stopAll();
                 this.game.events.off(EVENTS_NAME.chestLoot, this.chestLootHandler);
                 this.game.events.off(EVENTS_NAME.gameEnd, this.gameEndHandler);
-                this.scene.get('dungeon-scene').scene.restart();
-                this.scene.restart();
+                this.stopAllScenes()
+                this.scene.start('menu-scene');
+                // this.scene.get('dungeon-scene').scene.restart();
+                // this.scene.restart();
             });
 
         };
@@ -130,9 +132,7 @@ export class UIScene extends Scene {
 
     private shuffleArray(array: any[]) {
         for (let i = array.length - 1; i > 0; i--) {
-            // 生成随机索引
             const j = Math.floor(Math.random() * (i + 1));
-            // 交换元素
             [array[i], array[j]] = [array[j], array[i]];
         }
     }

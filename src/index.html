@@ -5,7 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Echoes of the Dungeon</title>
 </head>
+<style>
+    @font-face {
+        font-family: 'PixelFont';
+        src: url('assets/ttf/dpcomic.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+    @font-face {
+        font-family: 'PixelFontChinese';
+        src: url('assets/ttf/Cubic_11_1.100_R.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+    }
+</style>
 <body>
+    <style>
+        .font-preload {
+            font-family: 'PixelFont';
+            visibility: hidden;
+            display: none;
+        }
+        .font-preload-2 {
+            font-family: 'PixelFontChinese';
+            visibility: hidden;
+            display: none;
+        }
+    </style>
+    <div class="font-preload">Font loading</div>
+    <div class="font-preload-2">Font loading</div>
     <div id="game"></div>
     
 </body>
