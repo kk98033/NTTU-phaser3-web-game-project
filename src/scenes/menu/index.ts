@@ -35,12 +35,18 @@ export class MainMenu extends Phaser.Scene {
             }
         ).setOrigin(0.5, 0.5); 
 
-        const buttonSpacing = 50; // 按钮间的间距
+        const buttonSpacing = 50; 
         let startGameButton = this.createButton('開始遊戲', () => this.startGame());
         let gameWebsiteButton = this.createButton('遊戲官方網站', () => this.openGameWebsite());
 
         startGameButton.setPosition(this.cameras.main.centerX, this.cameras.main.centerY - buttonSpacing / 2 + 100);
         gameWebsiteButton.setPosition(this.cameras.main.centerX, this.cameras.main.centerY + startGameButton.height + buttonSpacing / 2 + 100);
+
+        // hide loading image
+        var loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen) {
+            loadingScreen.style.display = 'none';
+        }
     }
 
     createButton(text: string, onClick: any) {
