@@ -58,11 +58,14 @@ export class Battle {
         // 10% to drop a loot
         const randomChance = Math.random() * 100;
 
-        if (randomChance < 10) {
-            // pick potion or coin
-            if (Math.random() < 0.5) {
+        // pick potion or coin
+        if (Math.random() < 0.5) {
+            if (randomChance < 5) {
                 this.dropHealthPotion(enemy.x, enemy.y);
-            } else {
+            }
+            
+        } else {
+            if (randomChance < 5) {
                 this.dropCoin(enemy.x, enemy.y);
             }
         }

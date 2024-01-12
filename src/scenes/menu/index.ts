@@ -4,7 +4,7 @@ export class MainMenu extends Phaser.Scene {
     constructor() {
         super('menu-scene');
     }
-
+    
     preload() {
     }
     
@@ -82,6 +82,7 @@ export class MainMenu extends Phaser.Scene {
         // wait for fadeout
         this.time.delayedCall(2000, () => {
             // transition to next scence
+            this.scene.stop('menu-scene');
             this.scene.start('dungeon-scene');
             this.scene.start('ui-scene');
 
