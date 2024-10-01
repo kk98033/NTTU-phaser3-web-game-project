@@ -3,7 +3,7 @@
 這是一個為了NTTU（國立臺東大學）遊戲程式設計應用與實務課程的期末網頁專案。此專案使用了Phaser 3遊戲引擎和多個開源JavaScript/TypeScript套件來開發。
 
 ## 線上遊玩網址
-[線上遊玩網址](https://games.iddle.dev/WebGame)
+[線上遊玩網址](https://games.iddle.dev/Echoes-of-the-Dungeon/)
 
 ## 使用技術
 
